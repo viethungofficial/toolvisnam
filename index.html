@@ -187,7 +187,7 @@
     <!-- HEADER / MENU -->
     <header class="sticky top-0 z-40 w-full glass-panel transition-all duration-300 border-b border-slate-200/50 dark:border-slate-800/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- Logo Vector (SỬA: Đồng bộ thiết kế 100% với Favicon SVG cao cấp mới) -->
+            <!-- Logo Vector (Đồng bộ thiết kế 100% với Favicon SVG) -->
             <a href="#" onclick="switchTab('home')" class="flex items-center gap-2.5 group">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-all duration-300">
                     <svg class="w-6 h-6 stroke-white fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -380,12 +380,12 @@
                         <button onclick="resetFilters()" class="btn btn-sm btn-primary rounded-xl bg-indigo-600 border-none hover:bg-indigo-700">Khôi phục bộ lọc</button>
                     </div>
 
-                    <!-- Grid chứa Files (SỬA: Hỗ trợ layout 3x3 chính xác cho các card) -->
+                    <!-- Grid chứa Files -->
                     <div id="files-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Các File Card sẽ được render động ở đây -->
                     </div>
 
-                    <!-- Phân trang (SỬA: Hiện chuẩn nút phân trang của 3x3) -->
+                    <!-- Phân trang -->
                     <div id="pagination" class="flex justify-center items-center gap-1.5 pt-6 pb-2">
                         <!-- Sẽ sinh các nút trang -->
                     </div>
@@ -769,7 +769,7 @@
 
     </main>
 
-    <!-- FOOTER (SỬA: Sử dụng Icon SVG vẽ tay tiêu chuẩn cho Facebook, Tiktok, Youtube cực đẹp) -->
+    <!-- FOOTER -->
     <footer id="footer-contact" class="bg-slate-950 text-slate-400 py-8 px-4 sm:px-6 lg:px-8 border-t border-slate-900">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <!-- Left Info -->
@@ -818,32 +818,32 @@
 
     <!-- MODALS MODALS MODALS -->
 
-    <!-- MODAL ĐĂNG NHẬP ADMIN (SỬA: Đổi sang Firebase Email/Password Auth khi hoạt động) -->
+    <!-- MODAL ĐĂNG NHẬP ADMIN (SỬA: Không hiện bất cứ gợi ý mã PIN/Password nào để tăng tính bảo mật) -->
     <div id="login-modal" class="modal modal-bottom sm:modal-middle">
         <div class="modal-box glass-panel max-w-sm rounded-3xl border border-slate-200/50 dark:border-slate-800/50">
             <h3 class="font-extrabold text-xl text-center text-slate-800 dark:text-slate-100">Xác Thực Quản Trị Viên</h3>
             <p id="login-modal-sub" class="text-xs text-center text-slate-400 mt-1">Đang khởi tạo chế độ bảo mật...</p>
             
-            <form onsubmit="handleAdminLogin(event)" class="space-y-4 mt-6">
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4 mt-6" autocomplete="off">
                 <!-- Vùng nhập cho Firebase Đám Mây (Email & Pass) -->
                 <div id="login-firebase-fields" class="space-y-4 hidden">
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Email Quản Trị (Firebase Auth) *</span></label>
-                        <input type="email" id="admin-email" placeholder="admin@example.com" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
+                        <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Email Quản Trị *</span></label>
+                        <input type="email" id="admin-email" placeholder="Nhập email quản trị của bạn" autocomplete="off" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mật khẩu bảo mật *</span></label>
-                        <input type="password" id="admin-password-cloud" placeholder="••••••••" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
+                        <input type="password" id="admin-password-cloud" placeholder="Nhập mật khẩu" autocomplete="new-password" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
                     </div>
                 </div>
 
-                <!-- Vùng nhập cho chế độ Offline cục bộ -->
+                <!-- Vùng nhập cho chế độ Offline cục bộ (SỬA: Bảo mật không gợi ý mã PIN cũ) -->
                 <div id="login-local-fields" class="form-control">
-                    <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mã bảo mật Admin (Local PIN: 123456) *</span></label>
-                    <input type="password" id="admin-password-local" placeholder="••••••" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
+                    <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mã PIN Quản Trị *</span></label>
+                    <input type="password" id="admin-password-local" placeholder="Nhập mã PIN xác thực" autocomplete="new-password" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
                 </div>
 
-                <button type="submit" class="btn btn-primary w-full rounded-xl shadow-lg mt-2 bg-indigo-600 border-none hover:bg-indigo-700">Xác Nhận Đăng Nhập</button>
+                <button type="submit" class="btn btn-primary w-full rounded-xl shadow-lg mt-2 bg-indigo-600 border-none hover:bg-indigo-700 font-bold">Xác Nhận Đăng Nhập</button>
             </form>
             
             <div class="modal-action justify-center">
@@ -930,7 +930,7 @@
 
     <!-- JAVASCRIPT LOGIC CHÍNH -->
     <script type="module">
-        // Import Firebase v11.6.1 SDKs (SỬA: Bổ sung signInWithEmailAndPassword cho xác thực bảo mật tài khoản admin thực tế)
+        // Import Firebase v11.6.1 SDKs
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signOut, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
@@ -942,6 +942,17 @@
         let auth = null;
         let isFirebaseActive = false;
         let currentUser = null;
+
+        // SỬA: Thêm trực tiếp cấu hình Firebase chính chủ do khách hàng cung cấp
+        const defaultFirebaseConfig = {
+            apiKey: "AIzaSyBLj75mF2S314tVkMwhswHFDXLlmuEka7I",
+            authDomain: "toolvisnam.firebaseapp.com",
+            projectId: "toolvisnam",
+            storageBucket: "toolvisnam.firebasestorage.app",
+            messagingSenderId: "1053113906666",
+            appId: "1:1053113906666:web:e5bec76fee0633d31eee93",
+            measurementId: "G-L8YW0SDY78"
+        };
 
         // Trạng thái cục bộ (State) ứng dụng
         let state = {
@@ -974,7 +985,7 @@
             },
             pagination: {
                 currentPage: 1,
-                itemsPerPage: 9 // SỬA: Ép cứng hiển thị lưới 3x3 (9 tệp một trang)
+                itemsPerPage: 9 // Ép cứng hiển thị lưới 3x3 (9 tệp một trang)
             },
             ui: {
                 gridCols: 3,
@@ -1044,7 +1055,7 @@
 
         // --- HÀM KHỞI CHẠY CHÍNH (ONLOAD) ---
         window.addEventListener('DOMContentLoaded', async () => {
-            // SỬA: Định nghĩa & nhúng Favicon SVG cao cấp đồng bộ logo thương hiệu
+            // Định nghĩa & nhúng Favicon SVG cao cấp đồng bộ logo thương hiệu
             setupDynamicFavicon();
             
             lucide.createIcons();
@@ -1088,7 +1099,7 @@
             `;
             const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
             link.type = 'image/svg+xml';
-            link.rel = 'shortcut icon';
+            link.rel = 'icon';
             link.href = 'data:image/svg+xml;utf8,' + encodeURIComponent(faviconSVG);
             document.getElementsByTagName('head')[0].appendChild(link);
         }
@@ -1096,17 +1107,14 @@
         // --- KHỞI TẠO FIREBASE ---
         async function setupFirebase() {
             try {
-                let activeConfig = null;
+                let activeConfig = defaultFirebaseConfig; // Ưu tiên cấu hình Firebase do bạn cung cấp
+                
                 if (state.settings.customFirebase) {
                     try {
                         activeConfig = JSON.parse(state.settings.customFirebase);
                     } catch (e) {
                         console.error("Cấu hình Firebase tùy chỉnh bị lỗi cú pháp JSON:", e);
                     }
-                }
-
-                if (!activeConfig && typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    activeConfig = JSON.parse(__firebase_config);
                 }
 
                 if (activeConfig) {
@@ -1408,7 +1416,7 @@
             }
             
             state.filters.search = val;
-            state.pagination.currentPage = 1; // SỬA: Reset về trang đầu khi tìm kiếm
+            state.pagination.currentPage = 1; // Reset về trang đầu khi tìm kiếm
             filterAndRender();
         }
 
@@ -1465,9 +1473,9 @@
 
             grid.className = state.ui.gridCols === 1 
                 ? 'grid grid-cols-1 gap-4' 
-                : 'grid grid-cols-1 md:grid-cols-3 gap-6'; // SỬA: Lưới 3 cột chuẩn
+                : 'grid grid-cols-1 md:grid-cols-3 gap-6'; // Lưới 3 cột chuẩn
 
-            // SỬA: Áp dụng thuật toán phân chia trang chính xác 3x3 (Items per page = 9)
+            // Áp dụng thuật toán phân chia trang chính xác 3x3 (Items per page = 9)
             const itemsPerPage = state.pagination.itemsPerPage;
             const totalPages = Math.ceil(totalFilteredCount / itemsPerPage);
             
@@ -1562,13 +1570,13 @@
                 }
             }).join('');
 
-            // SỬA: Khởi dựng nút phân trang tuyệt đẹp
+            // Khởi dựng nút phân trang tuyệt đẹp
             renderPaginationControls(totalPages);
 
             lucide.createIcons();
         }
 
-        // SỬA: Hàm tự động vẽ các nút phân trang của 3x3 Grid
+        // Hàm tự động vẽ các nút phân trang của 3x3 Grid
         function renderPaginationControls(totalPages) {
             const paginationEl = document.getElementById('pagination');
             if (totalPages <= 1) {
@@ -2357,7 +2365,7 @@
                 } else {
                     clearBtn.classList.add('hidden');
                 }
-                state.pagination.currentPage = 1; // SỬA: Reset về trang 1
+                state.pagination.currentPage = 1; // Reset về trang 1
                 filterAndRender();
             }
 
@@ -2371,7 +2379,7 @@
 
             window.filterByCategory = function(slug) {
                 state.filters.category = slug;
-                state.pagination.currentPage = 1; // SỬA: Reset về trang 1
+                state.pagination.currentPage = 1; // Reset về trang 1
                 renderCategories();
                 filterAndRender();
                 scrollToSection('dashboard');
@@ -2425,7 +2433,7 @@
             }
         }
 
-        // SỬA: Đăng nhập tích hợp Firebase Auth chính xác (Email / Password) và Local Fallback
+        // Đăng nhập tích hợp Firebase Auth chính xác (Email / Password) và Local Fallback
         window.handleAdminLogin = async function(e) {
             e.preventDefault();
             
