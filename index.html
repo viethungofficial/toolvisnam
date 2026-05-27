@@ -25,12 +25,12 @@
                 'resetFileForm', 'renderAdminFileList', 'handleSaveCategory', 
                 'resetCategoryForm', 'handleSaveGeneralSettings', 'handleSaveMarqueeSettings', 
                 'updateMarqueeSpeedDisplay', 'changeThemeColor', 'filterByCategory', 
-                'handleAdminLogin', 'closeModal', 'triggerDownload', 'copyShareLink', 
+                'handleAdminLogin', 'closeModal', 'openModal', 'triggerDownload', 'copyShareLink', 
                 'showQRCode', 'showFileDetails', 'editFile', 'deleteFile', 
                 'editCategory', 'deleteCategory', 'toggleLoginMode', 'setupEventListeners',
                 'setupDynamicFavicon', 'setupDarkMode', 'loadData', 'saveDriveUrl', 
                 'testDriveConnection', 'generateMockData', 'updateAdminAuthenticationHeader',
-                'openContactModal', 'handleSendContact', 'deleteMessage', 'saveAdminPin'
+                'openContactModal', 'handleSendContact', 'deleteMessage', 'saveAdminPin', 'changePage', 'showToast'
             ];
             stubFuncs.forEach(func => {
                 window[func] = function(...args) {
@@ -218,7 +218,7 @@
         <span class="loading loading-infinity loading-lg text-primary"></span>
         <div class="text-center">
             <h3 class="font-bold text-xl text-primary-content">ShareFile Pro</h3>
-            <p class="text-xs text-slate-400 mt-1 font-semibold">Đang đồng bộ hóa cơ sở dữ liệu Cloud...</p>
+            <p class="text-xs text-slate-400 mt-1 font-semibold">Đang kết nối cơ sở dữ liệu đám mây...</p>
         </div>
     </div>
 
@@ -709,7 +709,7 @@
                                 <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs flex gap-2.5 items-start">
                                     <span class="p-1 rounded bg-green-500/10 text-emerald-500 mt-0.5"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>
                                     <div>
-                                        <p class="font-bold text-slate-700 dark:text-slate-300">Khởi tạo hệ thống v6.1.0 Pro</p>
+                                        <p class="font-bold text-slate-700 dark:text-slate-200">Khởi tạo hệ thống v6.1.0 Pro</p>
                                         <p class="text-slate-400 text-[9px] dark:text-slate-500">Vừa xong • Admin</p>
                                     </div>
                                 </div>
@@ -722,7 +722,7 @@
                 <div id="admin-sub-manage-files" class="hidden space-y-4">
                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
                         <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Danh Sách Toàn Bộ File Hệ Thống</span>
-                        <div class="relative w-full sm:max-w-xs glowing-input rounded-xl border border-slate-200 dark:border-slate-800">
+                        <div class="relative w-full sm:max-w-xs glowing-input rounded-xl border border-slate-200/40 dark:border-slate-800/40">
                             <input id="admin-search-file" type="text" placeholder="Tìm kiếm nhanh..." class="input input-sm border-none bg-white dark:bg-slate-900/50 w-full rounded-xl pl-9 text-slate-800 dark:text-slate-100" oninput="renderAdminFileList()">
                             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-400"></i>
                         </div>
@@ -1124,7 +1124,7 @@
             ],
             settings: {
                 siteName: 'ShareFile Pro',
-                siteSubtitle: 'Hệ thống tải 1-Click v6.1.0-Ultimate',
+                siteSubtitle: 'Hệ thống tải 1-Click v6.1.0-Pro',
                 heroTitle: 'Tải Xuống File Trực Tiếp Chỉ Với 1 Cú Click',
                 heroDesc: 'Kho phần mềm, Driver, Tài liệu và ISO Windows chất lượng cao. Tất cả tệp đều được kiểm tra an toàn và có liên kết trực tiếp tốc độ cực nhanh.',
                 themeColor: '#4f46e5',
@@ -1830,7 +1830,7 @@
         }
 
         // Thay đổi trang trong phân trang 3x3
-        window.changePage = function(pageNumber) {
+        function changePage(pageNumber) {
             state.pagination.currentPage = pageNumber;
             filterAndRender();
             // Cuộn mượt về khu vực Dashboard chính
@@ -1869,7 +1869,7 @@
                         </div>
                         <div class="flex items-center justify-between border-t border-indigo-500/10 pt-3" onclick="event.stopPropagation()">
                             <span class="text-[10px] font-black text-indigo-500">${file.fileSize} • Lượt tải: ${file.downloadCount || 0}</span>
-                            <button onclick="triggerDownload('${file.id}')" class="btn btn-xs btn-primary rounded-lg text-[10px] font-bold bg-indigo-600 border-none hover:bg-indigo-700 text-white">TẢI TRỰC TIẾP</button>
+                            <button onclick="triggerDownload('${file.id}')" class="btn btn-xs btn-primary rounded-lg text-[10px] font-bold bg-indigo-600 border-none hover:bg-indigo-700 text-white font-bold">TẢI TRỰC TIẾP</button>
                         </div>
                     </div>
                 `;
@@ -2751,6 +2751,112 @@
             });
         }
 
+        // --- TIỆN ÍCH KHÁC (UTILITIES) ---
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const id = 'toast-' + Date.now();
+            let alertClass = 'alert-info';
+            let iconName = 'info';
+
+            if (type === 'success') {
+                alertClass = 'alert-success text-white bg-emerald-500 border-none shadow-lg';
+                iconName = 'check-circle';
+            } else if (type === 'error') {
+                alertClass = 'alert-error text-white bg-rose-500 border-none shadow-lg';
+                iconName = 'alert-octagon';
+            } else if (type === 'warning') {
+                alertClass = 'alert-warning text-white bg-amber-500 border-none shadow-lg';
+                iconName = 'alert-triangle';
+            }
+
+            const toastHTML = `
+                <div id="${id}" class="alert ${alertClass} py-3.5 px-5 rounded-2xl flex items-center gap-3 transition-all duration-300 translate-y-2 opacity-0 text-xs font-semibold text-white">
+                    <i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i>
+                    <span>${msg}</span>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', toastHTML);
+            lucide.createIcons();
+
+            const element = document.getElementById(id);
+            setTimeout(() => {
+                if (element) element.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                if (element) {
+                    element.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => element.remove(), 300);
+                }
+            }, 3500);
+        }
+
+        function openModal(id) {
+            const m = document.getElementById(id);
+            if (m) m.classList.add('modal-open');
+        }
+
+        function closeModal(id) {
+            const m = document.getElementById(id);
+            if (m) m.classList.remove('modal-open');
+        }
+
+        function scrollToSection(id) {
+            const section = document.getElementById(id);
+            if (section) section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function formatBytes(bytes, decimals = 1) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function getFileByteSize(sizeStr) {
+            if (!sizeStr) return 0;
+            const val = parseFloat(sizeStr);
+            if (isNaN(val)) return 0;
+            if (sizeStr.includes('GB')) return val * 1024 * 1024 * 1024;
+            if (sizeStr.includes('MB')) return val * 1024 * 1024;
+            if (sizeStr.includes('KB')) return val * 1024;
+            return val;
+        }
+
+        function logSystemActivity(text, status = 'info') {
+            const logsContainer = document.getElementById('system-logs');
+            if (!logsContainer) return;
+
+            const timeStr = new Date().toLocaleTimeString('vi-VN');
+            let iconClass = 'text-indigo-500 bg-indigo-500/10';
+            let iconName = 'info';
+
+            if (status === 'success') {
+                iconClass = 'text-emerald-500 bg-emerald-500/10';
+                iconName = 'check';
+            } else if (status === 'error') {
+                iconClass = 'text-rose-500 bg-rose-500/10';
+                iconName = 'trash-2';
+            }
+
+            const itemHTML = `
+                <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs flex gap-2.5 items-start">
+                    <span class="p-1 rounded ${iconClass} mt-0.5"><i data-lucide="${iconName}" class="w-3.5 h-3.5"></i></span>
+                    <div>
+                        <p class="font-bold text-slate-700 dark:text-slate-300">${text}</p>
+                        <p class="text-slate-400 text-[9px]">${timeStr} • Admin Session</p>
+                    </div>
+                </div>
+            `;
+            logsContainer.insertAdjacentHTML('afterbegin', itemHTML);
+            lucide.createIcons();
+        }
+
         // GẮN CÁC HÀM XỬ LÝ THỰC TẾ LÊN WINDOW ĐỂ GHI ĐÈ CÁC STUBS TRÁNH LỖI REFERENCEERROR
         window.openLoginModal = openLoginModal;
         window.switchTab = switchTab;
@@ -2777,6 +2883,7 @@
         window.filterByCategory = filterByCategory;
         window.handleAdminLogin = handleAdminLogin;
         window.closeModal = closeModal;
+        window.openModal = openModal; // THÊM DÒNG NÀY ĐỂ FIX LỖI REFERENCEERROR ĐÃ NÊU!
         window.triggerDownload = triggerDownload;
         window.copyShareLink = copyShareLink;
         window.showQRCode = showQRCode;
@@ -2797,6 +2904,8 @@
         window.openContactModal = openContactModal;
         window.handleSendContact = handleSendContact;
         window.deleteMessage = deleteMessage;
+        window.changePage = changePage;
+        window.showToast = showToast;
 
     </script>
 </body>
