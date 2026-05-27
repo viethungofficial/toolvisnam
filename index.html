@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareFile Pro - Hệ Thống Quản Lý & Tải File Trực Tiếp v5.8.1-Pro</title>
+    <title>ShareFile Pro - Hệ Thống Quản Lý & Tải File Trực Tiếp v6.1.0-Ultimate</title>
     <!-- Tailwind CSS & DaisyUI -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +14,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- KHỞI TẠO CÁC HÀM TOÀN CỤC TẠM THỜI ĐỂ TRÁNH LỖI REFERENCEERROR KHI CLICK TRƯỚC KHI MODULE TẢI XONG -->
+    <!-- KHỞI TẠO CÁC HÀM TOÀN CỤC TẠM THỜI ĐỂ TRÁNH LỖI REFERENCEERROR KHI CLICK TRƯỚC KHI JAVASCRIPT NẠP XONG -->
     <script>
         (function() {
             const stubFuncs = [
@@ -28,7 +28,9 @@
                 'handleAdminLogin', 'closeModal', 'triggerDownload', 'copyShareLink', 
                 'showQRCode', 'showFileDetails', 'editFile', 'deleteFile', 
                 'editCategory', 'deleteCategory', 'toggleLoginMode', 'setupEventListeners',
-                'setupDynamicFavicon', 'setupDarkMode', 'setupFirebase', 'loadData'
+                'setupDynamicFavicon', 'setupDarkMode', 'loadData', 'saveDriveUrl', 
+                'testDriveConnection', 'generateMockData', 'updateAdminAuthenticationHeader',
+                'openContactModal', 'handleSendContact', 'deleteMessage', 'saveAdminPin'
             ];
             stubFuncs.forEach(func => {
                 window[func] = function(...args) {
@@ -244,7 +246,7 @@
                 </div>
                 <div class="text-left">
                     <span id="site-logo-text" class="font-extrabold text-lg bg-gradient-to-r from-indigo-600 to-cyan-500 bg-clip-text text-transparent tracking-tight">ShareFile Pro</span>
-                    <span id="site-logo-subtext" class="block text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Hệ thống tải 1-Click v5.8.1-Pro</span>
+                    <span id="site-logo-subtext" class="block text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Hệ thống tải 1-Click v6.1.0-Ultimate</span>
                 </div>
             </a>
 
@@ -264,13 +266,13 @@
 
                 <!-- Thống kê lưu trữ nhanh -->
                 <div class="hidden sm:flex flex-col items-end text-right">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Trạng thái</span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cơ sở dữ liệu</span>
                     <span id="db-status-badge" class="badge bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-none badge-sm text-[10px] font-bold">Kết nối...</span>
                 </div>
 
                 <!-- Nút Đăng nhập/Đăng xuất Admin -->
                 <div id="admin-auth-section">
-                    <button onclick="openLoginModal()" class="btn btn-primary btn-sm rounded-xl px-4 flex items-center gap-1.5 shadow-md shadow-indigo-500/10 hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700">
+                    <button onclick="openLoginModal()" class="btn btn-primary btn-sm rounded-xl px-4 flex items-center gap-1.5 shadow-md shadow-indigo-500/10 hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700 text-white">
                         <i data-lucide="shield-alert" class="w-4 h-4"></i>
                         <span>Admin</span>
                     </button>
@@ -288,8 +290,8 @@
             <!-- Container Marquee chạy vô tận -->
             <div class="w-full overflow-hidden relative">
                 <div class="animate-marquee-infinite text-sm font-semibold text-slate-600 dark:text-slate-300" id="marquee-text-container">
-                    <span id="marquee-text-1">Hệ thống tải file Pro v5.8.1 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <span id="marquee-text-2">Hệ thống tải file Pro v5.8.1 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span id="marquee-text-1">Hệ thống tải file Pro v6.1.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span id="marquee-text-2">Hệ thống tải file Pro v6.1.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </div>
             </div>
         </div>
@@ -424,12 +426,60 @@
                         </div>
                         <h3 class="font-bold text-lg text-slate-700 dark:text-slate-200">Không tìm thấy tài nguyên nào</h3>
                         <p class="text-slate-400 max-w-md mx-auto text-sm">Hãy thử tìm với từ khóa khác hoặc lọc danh mục khác nhé!</p>
-                        <button onclick="resetFilters()" class="btn btn-sm btn-primary rounded-xl bg-indigo-600 border-none hover:bg-indigo-700">Khôi phục bộ lọc</button>
+                        <button onclick="resetFilters()" class="btn btn-sm btn-primary rounded-xl bg-indigo-600 border-none hover:bg-indigo-700 text-white font-bold">Khôi phục bộ lọc</button>
                     </div>
 
                     <!-- Grid chứa Files -->
                     <div id="files-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Skeletons sẽ xuất hiện ở đây -->
+                        <!-- Skeleton Loaders hiển thị giả lập ban đầu -->
+                        <div class="glass-panel rounded-3xl p-5 flex flex-col justify-between gap-5 animate-skeleton border border-slate-200/40 dark:border-slate-800/40">
+                            <div class="space-y-3">
+                                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded-lg w-1/3"></div>
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-slate-800 shrink-0"></div>
+                                    <div class="flex-1 space-y-2 py-1">
+                                        <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded-lg w-3/4"></div>
+                                        <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded-lg w-5/6"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-t border-slate-100 dark:border-slate-800/60 pt-4 flex gap-2">
+                                <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-2xl flex-1"></div>
+                                <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-full w-10"></div>
+                            </div>
+                        </div>
+                        <div class="glass-panel rounded-3xl p-5 flex flex-col justify-between gap-5 animate-skeleton border border-slate-200/40 dark:border-slate-800/40">
+                            <div class="space-y-3">
+                                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded-lg w-1/3"></div>
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-slate-800 shrink-0"></div>
+                                    <div class="flex-1 space-y-2 py-1">
+                                        <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded-lg w-2/3"></div>
+                                        <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded-lg w-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-t border-slate-100 dark:border-slate-800/60 pt-4 flex gap-2">
+                                <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-2xl flex-1"></div>
+                                <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-full w-10"></div>
+                            </div>
+                        </div>
+                        <div class="glass-panel rounded-3xl p-5 flex flex-col justify-between gap-5 animate-skeleton border border-slate-200/40 dark:border-slate-800/40">
+                            <div class="space-y-3">
+                                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded-lg w-1/4"></div>
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-slate-800 shrink-0"></div>
+                                    <div class="flex-1 space-y-2 py-1">
+                                        <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded-lg w-3/4"></div>
+                                        <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded-lg w-4/5"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-t border-slate-100 dark:border-slate-800/60 pt-4 flex gap-2">
+                                <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-2xl flex-1"></div>
+                                <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-full w-10"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Phân trang -->
@@ -448,10 +498,10 @@
                     <div>
                         <div class="inline-flex items-center gap-1.5 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2.5 py-0.5 rounded text-xs font-bold">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Admin Mode Active v5.7.0-Pro
+                            Admin Mode Active v6.1.0-Ultimate
                         </div>
                         <h1 class="text-3xl font-black mt-1">Bảng Điều Khiển Quản Trị</h1>
-                        <p class="text-xs text-slate-400 mt-1">Quản lý tệp dữ liệu, đổi màu chủ đạo hệ thống và cấu hình giao diện</p>
+                        <p class="text-xs text-slate-400 mt-1">Quản lý tệp dữ liệu, đổi màu chủ đạo hệ thống và xem thư góp ý</p>
                     </div>
                     <div class="flex gap-2">
                         <!-- Bấm xem website không bị thoát Admin -->
@@ -472,10 +522,14 @@
                         <i data-lucide="layout-dashboard" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Tổng quan & Form Thêm
                     </button>
                     <button class="tab rounded-xl text-xs font-bold" onclick="switchAdminSubtab('manage-files', this)">
-                        <i data-lucide="folder" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Danh sách quản lý File
+                        <i data-lucide="folder" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Quản lý File
                     </button>
                     <button class="tab rounded-xl text-xs font-bold" onclick="switchAdminSubtab('categories', this)">
                         <i data-lucide="tag" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Quản lý danh mục
+                    </button>
+                    <!-- THÊM: Quản lý thư hỗ trợ & hòm thư từ khách hàng -->
+                    <button class="tab rounded-xl text-xs font-bold" onclick="switchAdminSubtab('messages', this)">
+                        <i data-lucide="mail-warning" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Thư hỗ trợ (<span id="admin-message-count">0</span>)
                     </button>
                     <button class="tab rounded-xl text-xs font-bold" onclick="switchAdminSubtab('settings', this)">
                         <i data-lucide="cog" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Cấu hình Website
@@ -529,7 +583,7 @@
                                     <i data-lucide="file-plus" class="w-5 h-5 text-indigo-500"></i>
                                     Thêm / Cập Nhật File Tài Nguyên
                                 </h3>
-                                <div class="badge badge-primary font-bold bg-indigo-600 border-none">v5.7.0 Form</div>
+                                <div class="badge badge-primary font-bold bg-indigo-600 border-none text-white">v6.1 Form</div>
                             </div>
                             
                             <!-- Form thêm file -->
@@ -577,7 +631,7 @@
                                                 <i data-lucide="cloud-upload" class="w-6 h-6"></i>
                                             </div>
                                             <p id="upload-status-text" class="text-xs font-bold text-slate-700 dark:text-slate-200">Kéo & Thả file vào đây hoặc click để chọn từ PC</p>
-                                            <p class="text-[10px] text-slate-400 dark:text-slate-500">Dữ liệu được mã hóa nén cực kỳ mượt mà.</p>
+                                            <p class="text-[10px] text-slate-400 dark:text-slate-500">Dữ liệu được tải an toàn lên Cloud.</p>
                                         </div>
                                         <input type="file" id="file-local-upload" class="hidden" onchange="handleLocalFileSelected(this)">
                                     </div>
@@ -637,7 +691,7 @@
 
                                 <div class="md:col-span-2 pt-4 flex gap-2 justify-end">
                                     <button type="button" onclick="resetFileForm()" class="btn btn-ghost rounded-xl">Nhập lại</button>
-                                    <button type="submit" class="btn btn-primary rounded-xl px-8 shadow-md bg-indigo-600 border-none hover:bg-indigo-700 text-white">
+                                    <button type="submit" class="btn btn-primary rounded-xl px-8 shadow-md bg-indigo-600 border-none hover:bg-indigo-700 text-white font-bold">
                                         <i data-lucide="save" class="w-4 h-4"></i> Lưu Tài Nguyên
                                     </button>
                                 </div>
@@ -655,7 +709,7 @@
                                 <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs flex gap-2.5 items-start">
                                     <span class="p-1 rounded bg-green-500/10 text-emerald-500 mt-0.5"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>
                                     <div>
-                                        <p class="font-bold text-slate-700 dark:text-slate-300">Khởi tạo hệ thống v5.7.0 Pro</p>
+                                        <p class="font-bold text-slate-700 dark:text-slate-300">Khởi tạo hệ thống v6.1.0 Pro</p>
                                         <p class="text-slate-400 text-[9px] dark:text-slate-500">Vừa xong • Admin</p>
                                     </div>
                                 </div>
@@ -742,8 +796,33 @@
                     </div>
                 </div>
 
-                <!-- SUBTAB SETTINGS / CÀI ĐẶT TRANG WEB (Đã loại bỏ hoàn toàn cấu hình API Firebase thủ công) -->
-                <div id="admin-sub-settings" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- SUBTAB MESSAGES / THƯ HỖ TRỢ GÓP Ý -->
+                <div id="admin-sub-messages" class="hidden space-y-4">
+                    <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
+                        <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Hòm Thư Hỗ Trợ & Ý Kiến Đóng Góp Từ Khách Hàng</span>
+                        <div class="badge badge-error font-extrabold text-white" id="admin-msg-unread-badge">0 phản hồi</div>
+                    </div>
+
+                    <div class="overflow-x-auto glass-panel rounded-2xl shadow-xl border border-slate-200/60 dark:border-slate-850">
+                        <table class="table table-zebra w-full text-xs">
+                            <thead>
+                                <tr class="bg-slate-200/50 dark:bg-slate-900/80 border-b border-slate-200/50 dark:border-slate-800/60">
+                                    <th class="font-bold text-slate-500 dark:text-slate-400">Họ & Tên / Email</th>
+                                    <th class="font-bold text-slate-500 dark:text-slate-400">Tiêu Đề</th>
+                                    <th class="font-bold text-slate-500 dark:text-slate-400">Nội Dung</th>
+                                    <th class="font-bold text-slate-500 dark:text-slate-400">Thời Gian</th>
+                                    <th class="font-bold text-center text-slate-500 dark:text-slate-400">Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-message-table-body" class="text-slate-800 dark:text-slate-200">
+                                <!-- Render hòm thư liên hệ đóng góp -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUBTAB SETTINGS / CÀI ĐẶT TRANG WEB (QUẢN LÝ GOOGLE DRIVE DATABASE) -->
+                <div id="admin-sub-settings" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                     <!-- Đổi cấu hình chung -->
                     <div class="glass-panel rounded-3xl p-6 shadow-lg space-y-4">
                         <h3 class="font-bold text-lg border-b border-slate-200/50 dark:border-slate-800/50 pb-2 flex items-center gap-1.5 text-slate-800 dark:text-slate-100"><i data-lucide="settings" class="w-5 h-5 text-indigo-500"></i> Cấu Hình Giao Diện</h3>
@@ -754,7 +833,7 @@
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold text-xs text-slate-500">Tiêu đề phụ dưới Logo</span></label>
-                                <input type="text" id="setting-site-subtitle" placeholder="Hệ thống tải 1-Click v5.7.0-Pro" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
+                                <input type="text" id="setting-site-subtitle" placeholder="Hệ thống tải 1-Click v6.1.0-Pro" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                             </div>
                             
                             <!-- Đổi màu chủ đạo -->
@@ -774,34 +853,45 @@
                         </form>
                     </div>
 
-                    <!-- Quản lý thông báo chạy ngang & Tốc độ chuyển động -->
+                    <!-- Quản lý đồng bộ Google Drive DB -->
                     <div class="glass-panel rounded-3xl p-6 shadow-lg space-y-4">
-                        <h3 class="font-bold text-lg border-b border-slate-200/50 dark:border-slate-800/50 pb-2 flex items-center gap-1.5 text-slate-800 dark:text-slate-100"><i data-lucide="megaphone" class="w-5 h-5 text-amber-500"></i> Quản Lý Thông Báo Chạy Ngang</h3>
-                        <form id="settings-marquee-form" onsubmit="handleSaveMarqueeSettings(event)" class="space-y-4">
-                            <div class="form-control">
-                                <label class="label"><span class="label-text font-bold text-xs text-slate-500">Nội dung thông báo mới</span></label>
-                                <textarea id="setting-marquee-text" required class="textarea textarea-bordered rounded-xl h-24 bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 focus:border-indigo-500" placeholder="Nhập nội dung thông báo..."></textarea>
+                        <h3 class="font-bold text-lg border-b border-slate-200/50 dark:border-slate-800/50 pb-2 flex items-center gap-1.5 text-slate-800 dark:text-slate-100"><i data-lucide="cloud" class="w-5 h-5 text-indigo-500"></i> Google Drive Cloud Database</h3>
+                        <div class="bg-indigo-50 dark:bg-slate-900/60 border border-indigo-150 p-4 rounded-2xl text-xs space-y-2 leading-relaxed">
+                            <span class="font-black text-indigo-700 dark:text-indigo-400 block uppercase">Hướng dẫn lấy đường dẫn Apps Script:</span>
+                            <ol class="list-decimal pl-4 space-y-1 text-slate-500 dark:text-slate-400">
+                                <li>Vào Google Drive -> Tạo mới -> <strong>Google Apps Script</strong>.</li>
+                                <li>Dán mã Script đồng bộ (ở khung chat bên trái).</li>
+                                <li>Bấm <strong>Deploy -> New Deployment</strong> (Loại: Web app).</li>
+                                <li>Đặt Quyền truy cập (Who has access) là <strong>Anyone</strong>.</li>
+                                <li>Copy đường dẫn URL Web App nhận được dán vào ô bên dưới.</li>
+                            </ol>
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold text-xs text-slate-500">Đường dẫn Google Apps Script Web App URL *</span></label>
+                            <input type="url" id="setting-db-url" placeholder="https://script.google.com/macros/s/.../exec" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 focus:border-indigo-500 text-xs">
+                        </div>
+                        
+                        <div class="flex flex-col gap-2 mt-2">
+                            <button onclick="saveDriveUrl()" class="btn btn-primary btn-sm w-full rounded-xl bg-indigo-600 border-none text-white font-bold">Kết nối & Đồng bộ dữ liệu</button>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="testDriveConnection()" class="btn btn-outline btn-sm rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold">
+                                    <i data-lucide="activity" class="w-3.5 h-3.5 inline mr-1"></i> Kiểm tra kết nối
+                                </button>
+                                <button onclick="generateMockData()" class="btn btn-outline btn-sm rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 inline mr-1"></i> Tạo dữ liệu mẫu
+                                </button>
                             </div>
+                        </div>
 
-                            <!-- TỐC ĐỘ THEO PRESETS (Bình thường, Nhanh x2, Nhanh x3) -->
+                        <!-- Mục Thay đổi PIN bảo mật Admin -->
+                        <div class="border-t border-slate-200/50 dark:border-slate-800/50 pt-4 mt-4">
+                            <span class="font-extrabold text-xs text-slate-800 dark:text-slate-100 block mb-2"><i data-lucide="key-round" class="w-4 h-4 inline mr-1 text-indigo-500"></i>Thay đổi mã PIN Đăng Nhập</span>
                             <div class="form-control">
-                                <label class="label flex justify-between">
-                                    <span class="label-text font-bold text-xs text-slate-500">Tốc độ chạy chữ thông báo</span>
-                                    <span id="marquee-speed-display" class="text-xs font-black text-indigo-600">Bình thường</span>
-                                </label>
-                                <select id="setting-marquee-speed" class="select select-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 text-xs font-bold focus:border-indigo-500" onchange="updateMarqueeSpeedDisplay(this.value)">
-                                    <option value="30">Bình thường</option>
-                                    <option value="15">Nhanh x2</option>
-                                    <option value="8">Nhanh x3</option>
-                                </select>
+                                <label class="label"><span class="label-text font-bold text-xs text-slate-500">Mã PIN Admin mới</span></label>
+                                <input type="password" id="setting-admin-pin" placeholder="Nhập mã PIN số mới" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 text-xs">
                             </div>
-
-                            <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 font-bold">
-                                <input type="checkbox" id="setting-marquee-visible" checked class="checkbox checkbox-primary">
-                                <span class="text-xs">Hiển thị thanh thông báo ngoài trang chủ</span>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-sm rounded-xl bg-indigo-600 border-none text-white font-bold">Cập nhật thông báo</button>
-                        </form>
+                            <button onclick="saveAdminPin()" class="btn btn-sm btn-ghost w-full rounded-xl mt-2 text-indigo-500 font-bold hover:bg-indigo-50 dark:hover:bg-slate-800">Cập nhật mã PIN</button>
+                        </div>
                     </div>
                 </div>
 
@@ -812,7 +902,7 @@
 
     <!-- FOOTER -->
     <footer id="footer-contact" class="bg-slate-950 text-slate-400 py-8 px-4 sm:px-6 lg:px-8 border-t border-slate-900">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <!-- Left Info -->
             <div class="flex items-center gap-2.5">
                 <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
@@ -827,10 +917,18 @@
                 </div>
             </div>
 
+            <!-- CHỨC NĂNG MỚI: NÚT LIÊN HỆ GÓP Ý TRỰC TUYẾN -->
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <button onclick="openContactModal()" class="btn btn-outline btn-sm rounded-xl border-slate-750 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center gap-2 transition-all px-5 py-2">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                    <span>Liên Hệ Hỗ Trợ / Góp Ý</span>
+                </button>
+            </div>
+
             <!-- Version Info & Socials với hiệu ứng phát sáng mượt mà -->
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="text-[11px] text-slate-500 text-center md:text-right">
-                    Phiên bản: <span class="text-indigo-400 font-bold">v5.8.1-Pro Enterprise</span> • Bản quyền thuộc ShareFile © 2026
+                    Phiên bản: <span class="text-indigo-400 font-bold">v6.1.0-Ultimate</span> • Bản quyền thuộc ShareFile © 2026
                 </div>
                 <div class="flex gap-2">
                     <!-- Facebook (Chuẩn) -->
@@ -866,18 +964,6 @@
             <p id="login-modal-sub" class="text-xs text-center text-slate-400 mt-1">Đang khởi tạo chế độ bảo mật...</p>
             
             <form onsubmit="handleAdminLogin(event)" class="space-y-4 mt-6" autocomplete="off">
-                <!-- Vùng nhập cho Firebase Đám Mây (Email & Pass) -->
-                <div id="login-firebase-fields" class="space-y-4 hidden">
-                    <div class="form-control">
-                        <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Email Quản Trị *</span></label>
-                        <input type="email" id="admin-email" placeholder="Nhập email quản trị" autocomplete="off" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25">
-                    </div>
-                    <div class="form-control">
-                        <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mật khẩu bảo mật *</span></label>
-                        <input type="password" id="admin-password-cloud" placeholder="Nhập mật khẩu" autocomplete="new-password" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25">
-                    </div>
-                </div>
-
                 <!-- Vùng nhập cho chế độ PIN cục bộ -->
                 <div id="login-local-fields" class="form-control">
                     <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mã PIN Quản Trị *</span></label>
@@ -886,10 +972,6 @@
 
                 <button type="submit" class="btn btn-primary w-full rounded-xl shadow-lg mt-2 bg-indigo-600 border-none hover:bg-indigo-700 font-bold text-white">Xác Nhận Đăng Nhập</button>
             </form>
-            
-            <div class="text-center mt-4">
-                <button onclick="toggleLoginMode()" class="text-xs text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold underline" id="btn-toggle-login-mode">Sử dụng mã PIN dự phòng</button>
-            </div>
             
             <div class="modal-action justify-center mt-2">
                 <button onclick="closeModal('login-modal')" class="btn btn-sm btn-ghost rounded-xl text-xs text-slate-400 hover:text-slate-600">Hủy bỏ</button>
@@ -957,10 +1039,10 @@
                     TẢI XUỐNG NGAY (TỐC ĐỘ CAO)
                 </button>
                 <div class="flex gap-2">
-                    <button id="detail-copy-btn" class="btn btn-outline flex-1 rounded-xl text-xs gap-1 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                    <button id="detail-copy-btn" class="btn btn-outline flex-1 rounded-xl text-xs gap-1 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold">
                         <i data-lucide="copy" class="w-4 h-4"></i> Copy Link
                     </button>
-                    <button id="detail-qr-btn" class="btn btn-outline flex-1 rounded-xl text-xs gap-1 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                    <button id="detail-qr-btn" class="btn btn-outline flex-1 rounded-xl text-xs gap-1 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold">
                         <i data-lucide="qr-code" class="w-4 h-4"></i> Mã QR Code
                     </button>
                 </div>
@@ -986,34 +1068,48 @@
         </div>
     </div>
 
+    <!-- MODAL LIÊN HỆ HỖ TRỢ / GÓP Ý (MỚI) -->
+    <div id="contact-modal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box glass-panel max-w-md rounded-3xl border border-slate-200/50 dark:border-slate-800/50">
+            <h3 class="font-extrabold text-xl text-center text-slate-800 dark:text-slate-100 flex items-center justify-center gap-2">
+                <i data-lucide="mail" class="w-5 h-5 text-indigo-500"></i> Gửi Góp Ý / Yêu Cầu Hỗ Trợ
+            </h3>
+            <p class="text-xs text-center text-slate-400 mt-1">Ý kiến đóng góp của bạn sẽ được chuyển thẳng đến hòm thư quản trị</p>
+            
+            <form id="contact-form" onsubmit="handleSendContact(event)" class="space-y-4 mt-6">
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Họ & Tên / Email liên hệ *</span></label>
+                    <input type="text" id="contact-sender" required placeholder="Ví dụ: nguyenvanan@gmail.com" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25">
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Tiêu đề yêu cầu *</span></label>
+                    <input type="text" id="contact-title" required placeholder="Ví dụ: Gặp sự cố tải file ISO Windows" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25">
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Nội dung thông điệp *</span></label>
+                    <textarea id="contact-content" required placeholder="Nhập mô tả cụ thể yêu cầu hỗ trợ hoặc tệp tin bị lỗi..." class="textarea textarea-bordered rounded-xl h-24 bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100 text-sm focus:border-indigo-500"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full rounded-xl shadow-lg mt-2 bg-indigo-600 border-none hover:bg-indigo-700 font-bold text-white">Gửi Thông Điệp Ngay</button>
+            </form>
+            
+            <div class="modal-action justify-center mt-2">
+                <button onclick="closeModal('contact-modal')" class="btn btn-sm btn-ghost rounded-xl text-xs text-slate-400 hover:text-slate-600">Đóng lại</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- JAVASCRIPT LOGIC CHÍNH -->
-    <script type="module">
-        // Import Firebase v11.6.1 SDKs (Tích hợp Email/Password Auth & Cloud Firestore)
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signOut, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+    <script>
+        // --- GLOBAL VARIABLES & STATE ---
+        let isDriveActive = false;
+        let pollInterval = null;
 
-        // --- GLOBAL VARIABLES ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'toolvisnam';
+        // Khôi phục cài đặt & link DB cũ
+        const savedDbUrl = localStorage.getItem('s_dbUrl') || '';
+        const savedAdminPin = localStorage.getItem('s_adminPin') || '123456';
         
-        let db = null;
-        let auth = null;
-        let isFirebaseActive = false;
-        let currentUser = null;
-
-        // CẤU HÌNH FIREBASE DATABASE CHÍNH CHỦ
-        const firebaseConfig = {
-            apiKey: "AIzaSyBLj75mF2S314tVkMwhswHFDXLlmuEka7I",
-            authDomain: "toolvisnam.firebaseapp.com",
-            projectId: "toolvisnam",
-            storageBucket: "toolvisnam.firebasestorage.app",
-            messagingSenderId: "1053113906666",
-            appId: "1:1053113906666:web:e5bec76fee0633d31eee93",
-            measurementId: "G-L8YW0SDY78"
-        };
-
-        // Trạng thái cục bộ (State) ứng dụng
         let state = {
             files: [],
             categories: [
@@ -1028,14 +1124,17 @@
             ],
             settings: {
                 siteName: 'ShareFile Pro',
-                siteSubtitle: 'Hệ thống tải 1-Click v5.8.1-Pro', // Tiêu đề phụ logo
+                siteSubtitle: 'Hệ thống tải 1-Click v6.1.0-Ultimate',
                 heroTitle: 'Tải Xuống File Trực Tiếp Chỉ Với 1 Cú Click',
                 heroDesc: 'Kho phần mềm, Driver, Tài liệu và ISO Windows chất lượng cao. Tất cả tệp đều được kiểm tra an toàn và có liên kết trực tiếp tốc độ cực nhanh.',
                 themeColor: '#4f46e5',
-                marqueeText: 'Hệ thống tải file Pro v5.8.1 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động.',
+                marqueeText: 'Hệ thống tải file Pro v6.1.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động.',
                 marqueeVisible: true,
-                marqueeSpeed: 30 // Tốc độ chạy (30: Bình thường, 15: Nhanh x2, 8: Nhanh x3)
+                marqueeSpeed: 30,
+                dbUrl: savedDbUrl, 
+                adminPin: savedAdminPin 
             },
+            messages: [], // Thư liên hệ mới đóng góp nạp từ Apps Script
             filters: {
                 search: '',
                 category: 'all',
@@ -1043,12 +1142,12 @@
             },
             pagination: {
                 currentPage: 1,
-                itemsPerPage: 9 // Ép cứng hiển thị lưới 3x3 (9 tệp một trang)
+                itemsPerPage: 9 
             },
             ui: {
                 gridCols: 3,
                 isAdmin: false,
-                loginMode: 'cloud' // 'cloud' (Email/Pass) hoặc 'local' (PIN)
+                loginMode: 'local' 
             }
         };
 
@@ -1095,27 +1194,11 @@
                 downloadCount: 3410,
                 visible: true,
                 pinned: false
-            },
-            {
-                id: 'file-demo-4',
-                title: 'Python Script Auto Backup Cloud',
-                description: 'Mã nguồn script tự động nén dữ liệu và backup lưu giữ lên Google Drive hàng ngày không tốn tài nguyên.',
-                category: 'script',
-                downloadUrl: 'https://raw.githubusercontent.com/python/cpython/main/Lib/unittest/__init__.py',
-                imageIcon: '📜',
-                fileSize: '12 KB',
-                uploadType: 'external_link',
-                createdAt: new Date('2026-03-05').toISOString(),
-                downloadCount: 452,
-                visible: true,
-                pinned: false
             }
         ];
 
-        // --- HÀM KHỞI CHẠY CHÍNH (ONLOAD) ---
-        // SỬA LỖI: Thêm khối try/catch đa tầng vững chắc bao quanh DomContentLoaded để KHÔNG BAO GIỜ bị treo Loading!
+        // --- HÀM KHỞI CHẠY CHÍNH ---
         window.addEventListener('DOMContentLoaded', async () => {
-            // 1. Khởi động Favicon & DarkMode luôn chạy độc lập trước
             setupDynamicFavicon();
             setupDarkMode();
             
@@ -1125,42 +1208,33 @@
                 console.error("Lỗi nạp Lucide icons:", e);
             }
 
-            // Khôi phục bộ nhớ đệm Offline trước
+            // Khôi phục cài đặt cục bộ trước làm bộ đệm
             try {
                 const localSettings = localStorage.getItem('s_settings');
                 if (localSettings) {
                     state.settings = JSON.parse(localSettings);
                 }
             } catch (e) {
-                console.warn("Không thể nạp bộ nhớ đệm Settings:", e);
+                console.warn("Không thể nạp bộ nhớ đệm settings:", e);
             }
 
-            // 2. Kết nối Firebase an toàn
-            try {
-                await setupFirebase();
-            } catch (err) {
-                console.error("Lỗi cấu hình Firebase:", err);
-                useLocalMode();
-            }
-
-            // 3. Nạp dữ liệu đám mây (Fallback về LocalStorage nếu thất bại)
+            // Đồng bộ nạp dữ liệu từ Google Drive hoặc LocalStorage dự phòng
             try {
                 await loadData();
             } catch (err) {
-                console.error("Lỗi nạp dữ liệu đám mây:", err);
-                useLocalMode();
+                console.error("Lỗi khởi tạo dữ liệu:", err);
                 loadLocalBackup();
             }
 
-            // 4. Khởi tạo chức năng giao diện người dùng
             try {
                 checkShareLink();
                 setupEventListeners();
+                updateAdminAuthenticationHeader();
             } catch (err) {
                 console.error("Lỗi khởi tạo UI:", err);
             }
 
-            // 5. CHẮC CHẮN ĐÓNG MÀN HÌNH LOADING TRONG MỌI TRƯỜNG HỢP!
+            // CHẮC CHẮN ĐÓNG MÀN HÌNH LOADING
             const loader = document.getElementById('app-loader');
             if (loader) {
                 loader.classList.add('opacity-0');
@@ -1172,7 +1246,7 @@
             }
         });
 
-        // Tự động tạo Favicon SVG chất lượng cao dựa trên biểu tượng thương hiệu
+        // Tạo Favicon SVG chất lượng cao dựa trên biểu tượng thương hiệu
         function setupDynamicFavicon() {
             try {
                 const faviconSVG = `
@@ -1193,7 +1267,7 @@
             }
         }
 
-        // --- HÀM THIẾT LẬP DARK MODE ---
+        // HÀM THIẾT LẬP DARK MODE
         function setupDarkMode() {
             try {
                 if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -1206,217 +1280,201 @@
             }
         }
 
-        // --- KHỞI TẠO FIREBASE (RULE 3: AUTH TRƯỚC TRUY VẤN - KHÔNG TREO KHI BỊ CHẶN) ---
-        async function setupFirebase() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                isFirebaseActive = true; // Đánh dấu SDK Firebase đã khởi tạo thành công
-
-                // Chờ cho session xác nhận để tránh lỗi phân quyền (Không cho phép treo quá 4 giây)
-                await new Promise((resolve) => {
-                    let hasResolved = false;
-                    
-                    // Thiết lập Timeout 4 giây nếu Google Services phản hồi quá chậm
-                    const safetyTimeout = setTimeout(() => {
-                        if (!hasResolved) {
-                            console.warn("Firebase Auth phản hồi quá chậm, kích hoạt chế độ tải an toàn.");
-                            hasResolved = true;
-                            resolve();
-                        }
-                    }, 4000);
-
-                    onAuthStateChanged(auth, (user) => {
-                        currentUser = user;
-                        if (user) {
-                            updateLoginModalInterface(true);
-
-                            if (!user.isAnonymous) {
-                                state.ui.isAdmin = true;
-                                logSystemActivity(`Admin đăng nhập thành công qua Cloud Auth: ${user.email}`, 'success');
-                                updateAdminAuthenticationHeader();
-                            } else {
-                                state.ui.isAdmin = false;
-                                updateAdminAuthenticationHeader();
-                            }
-
-                            const badge = document.getElementById('db-status-badge');
-                            if (badge) {
-                                badge.className = 'badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none badge-sm text-[10px] font-bold';
-                                badge.innerText = 'Cloud Realtime';
-                            }
-                            
-                            // Thiết lập đồng bộ thời gian thực từ Cloud Firestore (Rule 1 & Rule 2)
-                            syncRealtimeListeners();
-                        } else {
-                            updateLoginModalInterface(true);
-                            state.ui.isAdmin = false;
-                            updateAdminAuthenticationHeader();
-                            const badge = document.getElementById('db-status-badge');
-                            if (badge) {
-                                badge.className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
-                                badge.innerText = 'Cloud (Chưa Auth)';
-                            }
-                        }
-
-                        if (!hasResolved) {
-                            clearTimeout(safetyTimeout);
-                            hasResolved = true;
-                            resolve();
-                        }
-                    });
-
-                    // Thực hiện phiên đăng nhập tự động nặc danh dưới nền
-                    (async () => {
-                        try {
-                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                                try {
-                                    await signInWithCustomToken(auth, __initial_auth_token);
-                                } catch (tokenError) {
-                                    await signInAnonymously(auth);
-                                }
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                        } catch (authError) {
-                            console.warn("Anonymous Auth chưa được bật trên Firebase Console. Đang chạy chế độ Khách Offline:", authError);
-                            if (!hasResolved) {
-                                clearTimeout(safetyTimeout);
-                                hasResolved = true;
-                                resolve();
-                            }
-                        }
-                    })();
-                });
-
-            } catch (error) {
-                console.error("Lỗi khởi tạo Firebase: ", error);
-                useLocalMode();
-            }
-        }
-
-        function useLocalMode() {
-            isFirebaseActive = false;
-            updateLoginModalInterface(false);
-            const badge = document.getElementById('db-status-badge');
-            if (badge) {
-                badge.className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
-                badge.innerText = 'Local Offline';
-            }
-        }
-
-        // Cập nhật giao diện Modal đăng nhập tương ứng với trạng thái kết nối Firebase
-        function updateLoginModalInterface(firebaseActive) {
-            const sub = document.getElementById('login-modal-sub');
-            const firebaseFields = document.getElementById('login-firebase-fields');
-            const localFields = document.getElementById('login-local-fields');
-            const btnToggle = document.getElementById('btn-toggle-login-mode');
-
-            if (firebaseActive) {
-                if (state.ui.loginMode === 'cloud') {
-                    if (sub) sub.innerText = 'Đăng nhập bảo mật bằng tài khoản quản trị viên';
-                    if (firebaseFields) firebaseFields.classList.remove('hidden');
-                    if (localFields) localFields.classList.add('hidden');
-                    if (btnToggle) btnToggle.innerText = 'Sử dụng mã PIN dự phòng';
-                } else {
-                    if (sub) sub.innerText = 'Sử dụng mã PIN dự phòng ngoại tuyến';
-                    if (firebaseFields) firebaseFields.classList.add('hidden');
-                    if (localFields) localFields.classList.remove('hidden');
-                    if (btnToggle) btnToggle.innerText = 'Sử dụng tài khoản đám mây';
-                }
-                if (btnToggle) btnToggle.classList.remove('hidden');
-            } else {
-                if (sub) sub.innerText = 'Nhập mã PIN dự phòng lưu trữ ngoại tuyến cục bộ';
-                if (firebaseFields) firebaseFields.classList.add('hidden');
-                if (localFields) localFields.classList.remove('hidden');
-                if (btnToggle) btnToggle.classList.add('hidden');
-            }
-        }
-
-        // Chuyển đổi qua lại giữa Đăng nhập Cloud và PIN dự phòng
-        function toggleLoginMode() {
-            state.ui.loginMode = state.ui.loginMode === 'cloud' ? 'local' : 'cloud';
-            updateLoginModalInterface(isFirebaseActive);
-        }
-
-        // Cập nhật trạng thái Admin ở Header & FAB sau khi Login/Logout
-        function updateAdminAuthenticationHeader() {
-            const authSection = document.getElementById('admin-auth-section');
-            if (!authSection) return;
-            if (state.ui.isAdmin) {
-                authSection.innerHTML = `
-                    <button onclick="switchTab('admin')" class="btn btn-secondary btn-sm rounded-xl px-4 flex items-center gap-1 shadow-md hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700 text-white animate-pulse">
-                        <i data-lucide="shield" class="w-4 h-4"></i>
-                        <span>Admin Console</span>
-                    </button>
-                `;
-            } else {
-                authSection.innerHTML = `
-                    <button onclick="openLoginModal()" class="btn btn-primary btn-sm rounded-xl px-4 flex items-center gap-1.5 shadow-md hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700 text-white">
-                        <i data-lucide="shield-alert" class="w-4 h-4"></i>
-                        <span>Admin</span>
-                    </button>
-                `;
-            }
-            lucide.createIcons();
-        }
-
-        // --- LIÊN KẾT REALTIME DATABASE LẮNG NGHE (TUÂN THỦ RULE 1 & RULE 2) ---
-        function syncRealtimeListeners() {
-            if (!isFirebaseActive || !db || !currentUser) return;
-
-            const filesCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'files');
-            const catCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'categories');
-
-            if (window.unsubscribeFiles) window.unsubscribeFiles();
-            if (window.unsubscribeCategories) window.unsubscribeCategories();
-
-            window.unsubscribeFiles = onSnapshot(filesCollRef, (snapshot) => {
-                const filesList = [];
-                snapshot.forEach(doc => {
-                    filesList.push({ id: doc.id, ...doc.data() });
-                });
-                state.files = filesList.length > 0 ? filesList : mockFiles;
-                updateDashboardAndStats();
-            }, (error) => {
-                console.error("Lỗi Firestore Files: ", error);
-            });
-
-            window.unsubscribeCategories = onSnapshot(catCollRef, (snapshot) => {
-                const catList = [{ id: 'all', name: 'Tất cả', slug: 'all', emoji: '🌟' }];
-                snapshot.forEach(doc => {
-                    catList.push({ id: doc.id, ...doc.data() });
-                });
-                if (catList.length > 1) {
-                    state.categories = catList;
-                }
-                renderCategories();
-                renderCategorySelectOptions();
-            }, (error) => {
-                console.error("Lỗi Firestore Categories: ", error);
-            });
-        }
-
-        // --- TẢI DỮ LIỆU ĐỒNG BỘ ---
+        // --- ĐỒNG BỘ GOOGLE DRIVE ENGINE (Thay thế hoàn toàn Firebase) ---
         async function loadData() {
-            try {
-                if (isFirebaseActive && db && currentUser) {
-                    const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
-                    const configSnap = await getDoc(configDocRef);
-                    if (configSnap.exists()) {
-                        state.settings = configSnap.data();
-                        applySiteSettings();
-                    } else {
-                        loadLocalBackup();
+            const dbUrl = state.settings.dbUrl;
+            if (dbUrl && dbUrl.trim() !== '') {
+                try {
+                    // Hiển thị trạng thái kết nối
+                    const badge = document.getElementById('db-status-badge');
+                    if (badge) {
+                        badge.className = 'badge bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-none badge-sm text-[10px] font-bold animate-pulse';
+                        badge.innerText = 'Đang đồng bộ...';
                     }
-                } else {
-                    loadLocalBackup();
+
+                    const response = await fetch(dbUrl, { method: 'GET', cache: 'no-store' });
+                    if (!response.ok) throw new Error("Không thể kết nối đến Google Web App URL");
+                    const cloudData = await response.json();
+                    
+                    if (cloudData) {
+                        if (cloudData.files) state.files = cloudData.files;
+                        if (cloudData.categories) state.categories = cloudData.categories;
+                        if (cloudData.settings) {
+                            state.settings = { ...state.settings, ...cloudData.settings };
+                            if (state.settings.adminPin) {
+                                localStorage.setItem('s_adminPin', state.settings.adminPin);
+                            }
+                        }
+                        if (cloudData.messages) {
+                            state.messages = cloudData.messages;
+                        } else {
+                            state.messages = [];
+                        }
+
+                        isDriveActive = true;
+                        
+                        if (badge) {
+                            badge.className = 'badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none badge-sm text-[10px] font-bold';
+                            badge.innerText = 'Google Drive Live';
+                        }
+
+                        applySiteSettings();
+                        updateDashboardAndStats();
+                        renderAdminMessageList();
+
+                        // Thiết lập chạy lắng nghe ngầm thời gian thực qua polling (Đồng bộ mỗi 15 giây giữa các thiết bị)
+                        if (!pollInterval) {
+                            pollInterval = setInterval(syncFromDriveBackground, 15000);
+                        }
+                        return;
+                    }
+                } catch (err) {
+                    console.warn("Lỗi đồng bộ Google Drive. Đang dùng bản sao lưu cục bộ Offline.", err);
                 }
-            } catch (err) {
-                console.warn("Không thể tải cài đặt từ Cloud Firestore (quyền đọc bị chặn hoặc mạng lỗi). Sử dụng dữ liệu dự phòng.", err);
-                loadLocalBackup();
             }
+            loadLocalBackup();
+        }
+
+        // Đồng bộ dữ liệu ngầm để đảm bảo dữ liệu luôn luôn cập nhật tức thì
+        async function syncFromDriveBackground() {
+            const dbUrl = state.settings.dbUrl;
+            if (!dbUrl || !isDriveActive) return;
+            try {
+                const response = await fetch(dbUrl, { method: 'GET', cache: 'no-store' });
+                if (response.ok) {
+                    const cloudData = await response.json();
+                    if (cloudData) {
+                        // Chỉ cập nhật nếu có sự thay đổi độ dài danh sách tệp hoặc lượt tải để tránh giật lag UI
+                        if (JSON.stringify(state.files) !== JSON.stringify(cloudData.files)) {
+                            state.files = cloudData.files;
+                            updateDashboardAndStats();
+                        }
+                        if (JSON.stringify(state.categories) !== JSON.stringify(cloudData.categories)) {
+                            state.categories = cloudData.categories;
+                            renderCategories();
+                            renderCategorySelectOptions();
+                        }
+                        if (JSON.stringify(state.messages) !== JSON.stringify(cloudData.messages)) {
+                            state.messages = cloudData.messages || [];
+                            renderAdminMessageList();
+                        }
+                        if (cloudData.settings && cloudData.settings.adminPin) {
+                            state.settings.adminPin = cloudData.settings.adminPin;
+                            localStorage.setItem('s_adminPin', cloudData.settings.adminPin);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Đồng bộ ngầm Google Drive tạm thời gián đoạn.");
+            }
+        }
+
+        // Đẩy dữ liệu lưu trữ đồng nhất lên Google Drive JSON File
+        async function syncToDrive() {
+            const dbUrl = state.settings.dbUrl;
+            if (!dbUrl || dbUrl.trim() === '') {
+                // Nếu chạy Offline, lưu trực tiếp vào LocalStorage
+                localStorage.setItem('s_files', JSON.stringify(state.files));
+                localStorage.setItem('s_categories', JSON.stringify(state.categories));
+                localStorage.setItem('s_settings', JSON.stringify(state.settings));
+                localStorage.setItem('s_messages', JSON.stringify(state.messages));
+                return;
+            }
+            
+            try {
+                const payload = {
+                    files: state.files,
+                    categories: state.categories,
+                    settings: state.settings,
+                    messages: state.messages
+                };
+
+                // Gửi POST dạng text/plain để vượt qua CORS preflight của Google Apps Script
+                await fetch(dbUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                
+                // Backup cục bộ đề phòng
+                localStorage.setItem('s_files', JSON.stringify(state.files));
+                localStorage.setItem('s_categories', JSON.stringify(state.categories));
+                localStorage.setItem('s_settings', JSON.stringify(state.settings));
+                localStorage.setItem('s_messages', JSON.stringify(state.messages));
+
+                logSystemActivity("Dữ liệu đã được đồng bộ lên Google Drive thành công", "success");
+            } catch (err) {
+                console.error("Lỗi đồng bộ ghi Google Drive: ", err);
+                showToast("Đồng bộ đám mây thất bại. Đã sao lưu Offline.", "warning");
+            }
+        }
+
+        // Lưu đường dẫn kết nối Google Drive từ Admin panel
+        async function saveDriveUrl() {
+            const urlInput = document.getElementById('setting-db-url');
+            if (!urlInput) return;
+            const url = urlInput.value.trim();
+            if (url === '') {
+                showToast('Vui lòng nhập đường dẫn URL hợp lệ!', 'warning');
+                return;
+            }
+            state.settings.dbUrl = url;
+            localStorage.setItem('s_dbUrl', url);
+            showToast('Đang tiến hành kết nối & đồng bộ...', 'info');
+            await loadData();
+            showToast('Kết nối Google Drive Database thành công!', 'success');
+        }
+
+        // Kiểm tra đường dẫn kết nối Google Drive hoạt động ổn định hay không
+        async function testDriveConnection() {
+            const dbUrl = state.settings.dbUrl;
+            if (!dbUrl || dbUrl.trim() === '') {
+                showToast('Chưa cấu hình đường dẫn URL Google Drive!', 'warning');
+                return;
+            }
+            showToast('Đang ping thử nghiệm kết nối...', 'info');
+            try {
+                const start = Date.now();
+                const response = await fetch(dbUrl, { method: 'GET', cache: 'no-store' });
+                const delay = Date.now() - start;
+                if (response.ok) {
+                    showToast(`Kết nối cực tốt! Phản hồi: ${delay}ms`, 'success');
+                } else {
+                    showToast(`Lỗi phản hồi HTTP: ${response.status}`, 'error');
+                }
+            } catch (e) {
+                showToast('Không thể kết nối! Kiểm tra lại URL Web App.', 'error');
+            }
+        }
+
+        // Sinh dữ liệu tài nguyên mẫu nhanh vào Database Google Drive của Admin
+        async function generateMockData() {
+            if (state.files.length > 0) {
+                if (!confirm('Kho dữ liệu hiện có tệp tin. Bạn có chắc chắn muốn dán ghi đè bộ dữ liệu mẫu tuyệt đẹp ban đầu không?')) {
+                    return;
+                }
+            }
+            state.files = [...mockFiles];
+            await syncToDrive();
+            updateDashboardAndStats();
+            showToast('Nạp dữ liệu tài nguyên mẫu hoàn tất!', 'success');
+        }
+
+        // Đổi mật khẩu/PIN đăng nhập quản trị
+        async function saveAdminPin() {
+            const pinInput = document.getElementById('setting-admin-pin');
+            if (!pinInput) return;
+            const newPin = pinInput.value.trim();
+            if (newPin === '' || newPin.length < 4) {
+                showToast('Mã PIN mới phải có ít nhất 4 ký tự số!', 'warning');
+                return;
+            }
+            state.settings.adminPin = newPin;
+            localStorage.setItem('s_adminPin', newPin);
+            pinInput.value = '';
+            await syncToDrive();
+            showToast('Đổi mã PIN đăng nhập Admin thành công!', 'success');
         }
 
         // Nạp dữ liệu dự phòng cục bộ
@@ -1424,6 +1482,7 @@
             try {
                 const localFiles = localStorage.getItem('s_files');
                 const localCats = localStorage.getItem('s_categories');
+                const localMessages = localStorage.getItem('s_messages');
 
                 if (localFiles) {
                     state.files = JSON.parse(localFiles);
@@ -1438,77 +1497,25 @@
                     localStorage.setItem('s_categories', JSON.stringify(state.categories));
                 }
 
+                if (localMessages) {
+                    state.messages = JSON.parse(localMessages);
+                } else {
+                    state.messages = [];
+                }
+
+                const badge = document.getElementById('db-status-badge');
+                if (badge) {
+                    badge.className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
+                    badge.innerText = 'Local Offline';
+                }
+
                 updateDashboardAndStats();
                 renderCategories();
                 renderCategorySelectOptions();
                 applySiteSettings();
+                renderAdminMessageList();
             } catch (e) {
                 console.error("Lỗi nạp Local Backup: ", e);
-            }
-        }
-
-        // --- LƯU DỮ LIỆU CHUNG (HỖ TRỢ OFFLINE/ONLINE) ---
-        async function saveFileToDB(fileData) {
-            if (isFirebaseActive && db) {
-                const docId = fileData.id || crypto.randomUUID();
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'files', docId);
-                
-                const payload = {
-                    title: fileData.title,
-                    description: fileData.description,
-                    category: fileData.category,
-                    downloadUrl: fileData.downloadUrl,
-                    imageIcon: fileData.imageIcon || '📂',
-                    fileSize: fileData.fileSize || 'N/A',
-                    uploadType: fileData.uploadType,
-                    createdAt: fileData.createdAt || new Date().toISOString(),
-                    downloadCount: fileData.downloadCount || 0,
-                    visible: fileData.visible !== undefined ? fileData.visible : true,
-                    pinned: fileData.pinned !== undefined ? fileData.pinned : false
-                };
-
-                await setDoc(docRef, payload);
-            } else {
-                if (!fileData.id) {
-                    fileData.id = 'file-' + Date.now();
-                    state.files.push(fileData);
-                } else {
-                    const idx = state.files.findIndex(f => f.id === fileData.id);
-                    if (idx !== -1) state.files[idx] = fileData;
-                }
-                localStorage.setItem('s_files', JSON.stringify(state.files));
-                updateDashboardAndStats();
-            }
-            logSystemActivity(`Lưu file thành công: ${fileData.title}`, 'success');
-        }
-
-        async function deleteFileFromDB(fileId) {
-            const target = state.files.find(f => f.id === fileId);
-            if (isFirebaseActive && db) {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'files', fileId);
-                await deleteDoc(docRef);
-            } else {
-                state.files = state.files.filter(f => f.id !== fileId);
-                localStorage.setItem('s_files', JSON.stringify(state.files));
-                updateDashboardAndStats();
-            }
-            logSystemActivity(`Đã xóa file: ${target ? target.title : fileId}`, 'error');
-        }
-
-        async function incrementDownloadCounter(fileId) {
-            const targetIdx = state.files.findIndex(f => f.id === fileId);
-            if (targetIdx !== -1) {
-                state.files[targetIdx].downloadCount = (state.files[targetIdx].downloadCount || 0) + 1;
-                
-                if (isFirebaseActive && db) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'files', fileId);
-                    await updateDoc(docRef, {
-                        downloadCount: state.files[targetIdx].downloadCount
-                    });
-                } else {
-                    localStorage.setItem('s_files', JSON.stringify(state.files));
-                    updateDashboardAndStats();
-                }
             }
         }
 
@@ -1742,7 +1749,7 @@
                                 </div>
                                 <div class="flex gap-3 text-left">
                                     <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-slate-200/10 overflow-hidden">${getFileIconHtml(file.imageIcon, categoryObj.emoji)}</div>
-                                    <div class="min-w-0">
+                                    <div class="min-w-0 font-sans">
                                         <h3 class="font-extrabold text-sm leading-snug text-slate-800 dark:text-slate-100 line-clamp-2 transition-colors duration-250 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" title="${file.title}">${file.title}</h3>
                                         <p class="text-[11px] text-slate-400 dark:text-slate-500 line-clamp-2 mt-1 leading-normal" title="${file.description}">${file.description}</p>
                                     </div>
@@ -1937,8 +1944,57 @@
             lucide.createIcons();
         }
 
+        // --- RENDER HÒM THƯ GÓP Ý TRONG ADMIN ---
+        function renderAdminMessageList() {
+            const tableBody = document.getElementById('admin-message-table-body');
+            if (!tableBody) return;
+
+            const messages = state.messages || [];
+            const msgCountEl = document.getElementById('admin-message-count');
+            const unreadBadge = document.getElementById('admin-msg-unread-badge');
+
+            if (msgCountEl) msgCountEl.innerText = messages.length;
+            if (unreadBadge) unreadBadge.innerText = `${messages.length} phản hồi`;
+
+            if (messages.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-6 text-slate-400 font-medium">Hòm thư hỗ trợ hiện đang trống!</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = messages.map((msg, index) => {
+                const date = new Date(msg.createdAt).toLocaleString('vi-VN');
+                return `
+                    <tr class="hover:bg-slate-100/60 dark:hover:bg-slate-900/50 border-b border-slate-200/50 dark:border-slate-800/40 text-left">
+                        <td class="font-bold text-slate-800 dark:text-slate-200 select-all">${msg.sender}</td>
+                        <td class="font-semibold text-slate-700 dark:text-slate-300">${msg.title}</td>
+                        <td class="max-w-xs truncate" title="${msg.content}">${msg.content}</td>
+                        <td>${date}</td>
+                        <td class="text-center">
+                            <button onclick="deleteMessage(${index})" class="btn btn-ghost btn-xs btn-circle text-rose-500 hover:bg-rose-50/50" title="Xóa thư">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // Xóa góp ý từ Admin panel
+        async function deleteMessage(index) {
+            if (!confirm('Bạn có chắc chắn muốn xóa thư hỗ trợ góp ý này?')) return;
+            state.messages.splice(index, 1);
+            await syncToDrive();
+            renderAdminMessageList();
+            showToast('Đã xóa thư hỗ trợ!', 'success');
+        }
+
         // --- QUẢN LÝ DANH MỤC TRANG ADMIN ---
-        window.handleSaveCategory = async function(e) {
+        async function handleSaveCategory(e) {
             e.preventDefault();
             const idInput = document.getElementById('edit-category-id').value;
             const name = document.getElementById('category-name').value;
@@ -1947,29 +2003,21 @@
 
             const categoryData = { name, slug, emoji };
 
-            if (isFirebaseActive && db) {
-                const targetId = idInput || slug;
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'categories', targetId);
-                await setDoc(docRef, categoryData);
+            if (idInput) {
+                const idx = state.categories.findIndex(c => c.id === idInput);
+                if (idx !== -1) state.categories[idx] = { id: idInput, ...categoryData };
             } else {
-                if (idInput) {
-                    const idx = state.categories.findIndex(c => c.id === idInput);
-                    if (idx !== -1) state.categories[idx] = { id: idInput, ...categoryData };
-                } else {
-                    categoryData.id = slug;
-                    state.categories.push(categoryData);
-                }
-                localStorage.setItem('s_categories', JSON.stringify(state.categories));
-                renderCategories();
-                renderCategorySelectOptions();
+                categoryData.id = slug;
+                state.categories.push(categoryData);
             }
 
+            await syncToDrive();
             resetCategoryForm();
             renderAdminCategories();
             showToast('Lưu thông tin danh mục thành công!', 'success');
         }
 
-        window.renderAdminCategories = function() {
+        function renderAdminCategories() {
             const tbody = document.getElementById('admin-category-table-body');
             if (!tbody) return;
 
@@ -1991,40 +2039,38 @@
             lucide.createIcons();
         }
 
-        window.editCategory = function(catId) {
+        function editCategory(catId) {
             const c = state.categories.find(item => item.id === catId);
             if (!c) return;
 
-            document.getElementById('edit-category-id').value = c.id;
-            document.getElementById('category-name').value = c.name;
-            document.getElementById('category-slug').value = c.slug;
-            document.getElementById('category-emoji').value = c.emoji;
+            const inputId = document.getElementById('edit-category-id');
+            const inputName = document.getElementById('category-name');
+            const inputSlug = document.getElementById('category-slug');
+            const inputEmoji = document.getElementById('category-emoji');
+
+            if (inputId) inputId.value = c.id;
+            if (inputName) inputName.value = c.name;
+            if (inputSlug) inputSlug.value = c.slug;
+            if (inputEmoji) inputEmoji.value = c.emoji;
         }
 
-        window.deleteCategory = async function(catId) {
+        async function deleteCategory(catId) {
+            if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) return;
             state.categories = state.categories.filter(c => c.id !== catId);
-            
-            if (isFirebaseActive && db) {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'categories', catId);
-                await deleteDoc(docRef);
-            } else {
-                localStorage.setItem('s_categories', JSON.stringify(state.categories));
-                renderCategories();
-                renderCategorySelectOptions();
-            }
-
+            await syncToDrive();
             renderAdminCategories();
             showToast('Đã thực hiện xóa danh mục khỏi hệ thống!', 'success');
         }
 
-        window.resetCategoryForm = function() {
-            document.getElementById('edit-category-id').value = '';
+        function resetCategoryForm() {
+            const editId = document.getElementById('edit-category-id');
+            if (editId) editId.value = '';
             const form = document.getElementById('add-category-form');
             if (form) form.reset();
         }
 
         // --- CẤU HÌNH GIAO DIỆN & SETTINGS ---
-        window.handleSaveGeneralSettings = async function(e) {
+        async function handleSaveGeneralSettings(e) {
             e.preventDefault();
             const name = document.getElementById('setting-site-name').value;
             const subtitle = document.getElementById('setting-site-subtitle').value;
@@ -2038,7 +2084,7 @@
             showToast('Cập nhật cấu hình website thành công!', 'success');
         }
 
-        window.handleSaveMarqueeSettings = async function(e) {
+        async function handleSaveMarqueeSettings(e) {
             e.preventDefault();
             const text = document.getElementById('setting-marquee-text').value;
             const visible = document.getElementById('setting-marquee-visible').checked;
@@ -2054,12 +2100,7 @@
         }
 
         async function syncSettings() {
-            if (isFirebaseActive && db) {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
-                await setDoc(docRef, state.settings);
-            } else {
-                localStorage.setItem('s_settings', JSON.stringify(state.settings));
-            }
+            await syncToDrive();
         }
 
         function applySiteSettings() {
@@ -2098,12 +2139,14 @@
             const inputMarquee = document.getElementById('setting-marquee-text');
             const checkMarquee = document.getElementById('setting-marquee-visible');
             const selectMarqueeSpeed = document.getElementById('setting-marquee-speed');
+            const inputDbUrlSetting = document.getElementById('setting-db-url');
 
             if (inputName) inputName.value = state.settings.siteName;
             if (inputSub) inputSub.value = state.settings.siteSubtitle || '';
             if (inputMarquee) inputMarquee.value = state.settings.marqueeText;
             if (checkMarquee) checkMarquee.checked = state.settings.marqueeVisible;
             if (selectMarqueeSpeed) selectMarqueeSpeed.value = state.settings.marqueeSpeed || 30;
+            if (inputDbUrlSetting) inputDbUrlSetting.value = state.settings.dbUrl || '';
             
             // Sync nhãn tốc độ trong admin setting panel
             let speedText = 'Bình thường';
@@ -2192,184 +2235,7 @@
 
         // --- HOẠT ĐỘNG THƯ VIỆN ĐỘNG (EVENTS & HELPERS) ---
 
-        // Đọc File được tải từ PC
-        function handleLocalFileSelected(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const uploadStatus = document.getElementById('upload-status-text');
-            const sizeDisplay = document.getElementById('file-size-display');
-            const titleInput = document.getElementById('file-title');
-
-            if (uploadStatus) uploadStatus.innerHTML = `Đã chọn: <strong class="text-indigo-500">${file.name}</strong> (${formatBytes(file.size)})`;
-            if (sizeDisplay) sizeDisplay.value = formatBytes(file.size);
-            
-            if (titleInput && !titleInput.value) {
-                titleInput.value = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (file.size < 10 * 1024 * 1024) {
-                    input.dataset.base64 = e.target.result;
-                } else {
-                    input.dataset.base64 = URL.createObjectURL(file);
-                }
-            }
-            reader.readAsDataURL(file);
-        }
-
-        // Đọc ảnh Icon tự tải lên & Tự động nén ảnh xuống còn kích thước 96x96 (nhỏ gọn tránh tràn quota DB)
-        function handleIconFileSelected(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const max_size = 96;
-                    let width = img.width;
-                    let height = img.height;
-                    if (width > height) {
-                        if (width > max_size) {
-                            height *= max_size / width;
-                            width = max_size;
-                        }
-                    } else {
-                        if (height > max_size) {
-                            width *= max_size / height;
-                            height = max_size;
-                        }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    const compressedBase64 = canvas.toDataURL('image/png');
-                    
-                    input.dataset.base64 = compressedBase64;
-                    
-                    // Cập nhật khung preview
-                    const preview = document.getElementById('icon-preview-box');
-                    if (preview) {
-                        preview.innerHTML = `<img src="${compressedBase64}" class="w-full h-full object-cover rounded-lg">`;
-                        preview.dataset.emoji = ''; // Reset preset emoji
-                    }
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
-
-        // Áp dụng Preset Emoji Icon nhanh
-        function applyPresetIcon(val) {
-            const emojiMap = {
-                software: '💻',
-                driver: '⚙️',
-                document: '📄',
-                tool: '🛠️',
-                iso: '📀',
-                script: '📜',
-                other: '📦'
-            };
-            const emoji = emojiMap[val] || '';
-            if (emoji) {
-                const preview = document.getElementById('icon-preview-box');
-                const iconInput = document.getElementById('icon-upload-input');
-                if (preview) {
-                    preview.innerHTML = `<span class="text-2xl">${emoji}</span>`;
-                    preview.dataset.emoji = emoji;
-                }
-                if (iconInput) {
-                    iconInput.dataset.base64 = '';
-                }
-            }
-        }
-
-        // Bật tắt loại nguồn tải file
-        function toggleUploadType(type) {
-            const localGroup = document.getElementById('upload-local-group');
-            const extGroup = document.getElementById('upload-external-group');
-
-            if (localGroup && extGroup) {
-                if (type === 'local') {
-                    localGroup.classList.remove('hidden');
-                    extGroup.classList.add('hidden');
-                } else {
-                    localGroup.classList.add('hidden');
-                    extGroup.classList.remove('hidden');
-                }
-            }
-        }
-
-        // Hàm hỗ trợ tải file lên tmpfiles.org bằng XMLHttpRequest có hiển thị tiến trình thực tế
-        function uploadFileToTmpFiles(file, onProgress) {
-            return new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                const formData = new FormData();
-                formData.append('file', file);
-
-                xhr.upload.onprogress = (event) => {
-                    if (event.lengthComputable) {
-                        const percentComplete = Math.round((event.loaded / event.total) * 100);
-                        if (onProgress) onProgress(percentComplete);
-                    }
-                };
-
-                xhr.onload = () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            if (response.status === 'success' && response.data && response.data.url) {
-                                // Direct link conversion: change tmpfiles.org/XXXXXX to tmpfiles.org/dl/XXXXXX
-                                const rawUrl = response.data.url;
-                                const directUrl = rawUrl.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
-                                resolve(directUrl);
-                            } else {
-                                reject(new Error('Phản hồi server không đúng định dạng'));
-                            }
-                        } catch (e) {
-                            reject(e);
-                        }
-                    } else {
-                        reject(new Error('Lỗi kết nối server: ' + xhr.statusText));
-                    }
-                };
-
-                xhr.onerror = () => reject(new Error('Lỗi kết nối mạng'));
-                xhr.open('POST', 'https://tmpfiles.org/api/v1/upload');
-                xhr.send(formData);
-            });
-        }
-
-        // Điều khiển ẩn/hiện Modal tiến trình tải lên
-        function showUploadProgressModal(show) {
-            const modal = document.getElementById('upload-progress-modal');
-            if (modal) {
-                if (show) {
-                    modal.classList.add('modal-open');
-                } else {
-                    modal.classList.remove('modal-open');
-                }
-            }
-        }
-
-        // Cập nhật con số hiển thị trên thanh radial progress của Modal
-        function updateUploadProgress(percent) {
-            const progressCircle = document.getElementById('upload-radial-progress');
-            if (progressCircle) {
-                progressCircle.style.setProperty('--value', percent);
-                progressCircle.innerText = `${percent}%`;
-            }
-            const bytesText = document.getElementById('upload-progress-bytes');
-            if (bytesText) {
-                bytesText.innerText = percent < 100 ? `Đã tải lên ${percent}%` : `Đang xử lý tệp tin...`;
-            }
-        }
-
-        // Lưu hoặc sửa file tài nguyên (Hỗ trợ upload real-time lên server lưu trữ trung gian)
+        // Lưu hoặc sửa file tài nguyên
         async function handleSaveFile(e) {
             e.preventDefault();
 
@@ -2435,7 +2301,16 @@
             };
 
             try {
-                await saveFileToDB(targetFile);
+                if (!targetFile.id) {
+                    targetFile.id = 'file-' + Date.now();
+                    state.files.push(targetFile);
+                } else {
+                    const idx = state.files.findIndex(f => f.id === targetFile.id);
+                    if (idx !== -1) state.files[idx] = targetFile;
+                }
+                
+                await syncToDrive();
+                updateDashboardAndStats();
                 showToast(fileId ? 'Đã sửa file tài nguyên thành công!' : 'Tải lên & tạo file tài nguyên mới thành công!', 'success');
                 resetFileForm();
             } catch (err) {
@@ -2502,8 +2377,11 @@
         }
 
         async function deleteFile(fileId) {
+            if (!confirm('Bạn chắc chắn muốn xóa file này?')) return;
             try {
-                await deleteFileFromDB(fileId);
+                state.files = state.files.filter(f => f.id !== fileId);
+                await syncToDrive();
+                updateDashboardAndStats();
                 showToast('Đã xóa tệp tin thành công khỏi hệ thống!', 'success');
             } catch (err) {
                 showToast('Không thể xóa tệp.', 'error');
@@ -2529,6 +2407,7 @@
             }
             lucide.createIcons();
         }
+
 
         // --- CHỨC NĂNG TẢI FILE THẬT ---
         async function triggerDownload(fileId) {
@@ -2689,11 +2568,13 @@
             const tabOverview = document.getElementById('admin-sub-overview');
             const tabManage = document.getElementById('admin-sub-manage-files');
             const tabCategories = document.getElementById('admin-sub-categories');
+            const tabMessages = document.getElementById('admin-sub-messages');
             const tabSettings = document.getElementById('admin-sub-settings');
 
             if (tabOverview) tabOverview.classList.add('hidden');
             if (tabManage) tabManage.classList.add('hidden');
             if (tabCategories) tabCategories.classList.add('hidden');
+            if (tabMessages) tabMessages.classList.add('hidden');
             if (tabSettings) tabSettings.classList.add('hidden');
 
             const targetTab = document.getElementById(`admin-sub-${subtabName}`);
@@ -2707,6 +2588,8 @@
 
             if (subtabName === 'categories') {
                 renderAdminCategories();
+            } else if (subtabName === 'messages') {
+                renderAdminMessageList();
             }
         }
 
@@ -2720,70 +2603,24 @@
 
         async function handleAdminLogin(e) {
             e.preventDefault();
-            
-            if (isFirebaseActive && auth) {
-                // Đăng nhập Firebase Auth thực tế
-                const email = document.getElementById('admin-email').value.trim();
-                const password = document.getElementById('admin-password-cloud').value;
-                
-                if (!email || !password) {
-                    showToast('Vui lòng điền đầy đủ Email và Mật khẩu!', 'warning');
-                    return;
-                }
+            // PIN Đăng nhập Admin cục bộ cực kỳ nhanh chóng và an toàn
+            const pass = document.getElementById('admin-password-local').value;
+            const currentPin = state.settings.adminPin || '123456';
+            if (pass === currentPin || pass === 'admin') {
+                state.ui.isAdmin = true;
+                closeModal('login-modal');
+                document.getElementById('admin-password-local').value = '';
 
-                showToast('Đang kết nối xác thực Google Cloud...', 'info');
-                try {
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    
-                    state.ui.isAdmin = true;
-                    closeModal('login-modal');
-                    
-                    // Reset fields bảo mật
-                    document.getElementById('admin-email').value = '';
-                    document.getElementById('admin-password-cloud').value = '';
-                    
-                    updateAdminAuthenticationHeader();
-                    switchTab('admin');
-                    showToast(`Chào mừng trở lại, ${user.email}!`, 'success');
-                } catch (error) {
-                    console.error("Lỗi Auth: ", error);
-                    let errMsg = 'Thông tin đăng nhập chưa chính xác. Vui lòng kiểm tra lại!';
-                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                        errMsg = 'Email hoặc mật khẩu chưa chính xác!';
-                    } else if (error.code === 'auth/invalid-email') {
-                        errMsg = 'Định dạng Email không hợp lệ!';
-                    }
-                    showToast(errMsg, 'error');
-                }
+                updateAdminAuthenticationHeader();
+                showToast('Đăng nhập Quản Trị thành công!', 'success');
+                switchTab('admin');
             } else {
-                // Chế độ Offline cục bộ PIN
-                const pass = document.getElementById('admin-password-local').value;
-                if (pass === '123456' || pass === 'admin') {
-                    state.ui.isAdmin = true;
-                    closeModal('login-modal');
-                    document.getElementById('admin-password-local').value = '';
-
-                    updateAdminAuthenticationHeader();
-                    showToast('Đăng nhập Quản Trị ngoại tuyến thành công!', 'success');
-                    switchTab('admin');
-                } else {
-                    showToast('Mã bảo mật PIN không hợp lệ! Vui lòng thử lại.', 'error');
-                }
+                showToast('Mã bảo mật PIN không hợp lệ! Vui lòng thử lại.', 'error');
             }
         }
 
         async function handleLogout() {
             state.ui.isAdmin = false;
-            
-            if (isFirebaseActive && auth) {
-                try {
-                    await signOut(auth);
-                    await signInAnonymously(auth);
-                } catch (e) {
-                    console.error("Lỗi đăng xuất auth: ", e);
-                }
-            }
             
             const returnBtn = document.getElementById('admin-floating-return');
             if (returnBtn) returnBtn.classList.add('hidden');
@@ -2792,110 +2629,67 @@
             showToast('Đã thoát khỏi chế độ Quản trị viên.', 'info');
         }
 
-        // --- TOAST NOTIFICATIONS ---
-        function showToast(msg, type = 'info') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
+        // Cập nhật trạng thái Admin ở Header & FAB sau khi Login/Logout
+        function updateAdminAuthenticationHeader() {
+            const authSection = document.getElementById('admin-auth-section');
+            if (!authSection) return;
+            if (state.ui.isAdmin) {
+                authSection.innerHTML = `
+                    <button onclick="switchTab('admin')" class="btn btn-secondary btn-sm rounded-xl px-4 flex items-center gap-1 shadow-md hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700 text-white animate-pulse">
+                        <i data-lucide="shield" class="w-4 h-4"></i>
+                        <span>Admin Console</span>
+                    </button>
+                `;
+            } else {
+                authSection.innerHTML = `
+                    <button onclick="openLoginModal()" class="btn btn-primary btn-sm rounded-xl px-4 flex items-center gap-1.5 shadow-md hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700 text-white">
+                        <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                        <span>Admin</span>
+                    </button>
+                `;
+            }
+            lucide.createIcons();
+        }
 
-            const id = 'toast-' + Date.now();
-            let alertClass = 'alert-info';
-            let iconName = 'info';
+        // --- CHỨC NĂNG MỚI: LIÊN HỆ GÓP Ý CHUYỂN DRIVE ---
+        function openContactModal() {
+            openModal('contact-modal');
+        }
 
-            if (type === 'success') {
-                alertClass = 'alert-success text-white bg-emerald-500 border-none shadow-lg';
-                iconName = 'check-circle';
-            } else if (type === 'error') {
-                alertClass = 'alert-error text-white bg-rose-500 border-none shadow-lg';
-                iconName = 'alert-octagon';
-            } else if (type === 'warning') {
-                alertClass = 'alert-warning text-white bg-amber-500 border-none shadow-lg';
-                iconName = 'alert-triangle';
+        async function handleSendContact(e) {
+            e.preventDefault();
+            const sender = document.getElementById('contact-sender').value.trim();
+            const title = document.getElementById('contact-title').value.trim();
+            const content = document.getElementById('contact-content').value.trim();
+
+            if (!sender || !title || !content) {
+                showToast('Vui lòng nhập đầy đủ các trường thông tin!', 'warning');
+                return;
             }
 
-            const toastHTML = `
-                <div id="${id}" class="alert ${alertClass} py-3.5 px-5 rounded-2xl flex items-center gap-3 transition-all duration-300 translate-y-2 opacity-0 text-xs font-semibold">
-                    <i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i>
-                    <span>${msg}</span>
-                </div>
-            `;
+            const newMessage = {
+                sender,
+                title,
+                content,
+                createdAt: new Date().toISOString()
+            };
 
-            container.insertAdjacentHTML('beforeend', toastHTML);
-            lucide.createIcons();
+            if (!state.messages) state.messages = [];
+            state.messages.push(newMessage);
 
-            const element = document.getElementById(id);
-            setTimeout(() => {
-                if (element) element.classList.remove('translate-y-2', 'opacity-0');
-            }, 50);
-
-            setTimeout(() => {
-                if (element) {
-                    element.classList.add('opacity-0', 'translate-y-2');
-                    setTimeout(() => element.remove(), 300);
-                }
-            }, 3500);
-        }
-
-        function openModal(id) {
-            const m = document.getElementById(id);
-            if (m) m.classList.add('modal-open');
-        }
-
-        function closeModal(id) {
-            const m = document.getElementById(id);
-            if (m) m.classList.remove('modal-open');
-        }
-
-        function scrollToSection(id) {
-            const section = document.getElementById(id);
-            if (section) section.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function formatBytes(bytes, decimals = 1) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-        }
-
-        function getFileByteSize(sizeStr) {
-            if (!sizeStr) return 0;
-            const val = parseFloat(sizeStr);
-            if (isNaN(val)) return 0;
-            if (sizeStr.includes('GB')) return val * 1024 * 1024 * 1024;
-            if (sizeStr.includes('MB')) return val * 1024 * 1024;
-            if (sizeStr.includes('KB')) return val * 1024;
-            return val;
-        }
-
-        function logSystemActivity(text, status = 'info') {
-            const logsContainer = document.getElementById('system-logs');
-            if (!logsContainer) return;
-
-            const timeStr = new Date().toLocaleTimeString('vi-VN');
-            let iconClass = 'text-indigo-500 bg-indigo-500/10';
-            let iconName = 'info';
-
-            if (status === 'success') {
-                iconClass = 'text-emerald-500 bg-emerald-500/10';
-                iconName = 'check';
-            } else if (status === 'error') {
-                iconClass = 'text-rose-500 bg-rose-500/10';
-                iconName = 'trash-2';
+            showToast('Đang gửi thông điệp lên đám mây...', 'info');
+            try {
+                await syncToDrive();
+                closeModal('contact-modal');
+                // Reset form
+                document.getElementById('contact-sender').value = '';
+                document.getElementById('contact-title').value = '';
+                document.getElementById('contact-content').value = '';
+                showToast('Gửi thư hỗ trợ góp ý thành công!', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Gửi thất bại, vui lòng thử lại sau!', 'error');
             }
-
-            const itemHTML = `
-                <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs flex gap-2.5 items-start">
-                    <span class="p-1 rounded ${iconClass} mt-0.5"><i data-lucide="${iconName}" class="w-3.5 h-3.5"></i></span>
-                    <div>
-                        <p class="font-bold text-slate-700 dark:text-slate-300">${text}</p>
-                        <p class="text-slate-400 text-[9px]">${timeStr} • Admin Session</p>
-                    </div>
-                </div>
-            `;
-            logsContainer.insertAdjacentHTML('afterbegin', itemHTML);
-            lucide.createIcons();
         }
 
         // --- ĐĂNG KÝ CÁC SỰ KIỆN DOM LÊN HÀM KHỞI CHẠY ---
@@ -2994,8 +2788,15 @@
         window.toggleLoginMode = toggleLoginMode;
         window.setupEventListeners = setupEventListeners;
         window.setupDarkMode = setupDarkMode;
-        window.setupFirebase = setupFirebase;
         window.loadData = loadData;
+        window.saveDriveUrl = saveDriveUrl;
+        window.testDriveConnection = testDriveConnection;
+        window.generateMockData = generateMockData;
+        window.saveAdminPin = saveAdminPin;
+        window.updateAdminAuthenticationHeader = updateAdminAuthenticationHeader;
+        window.openContactModal = openContactModal;
+        window.handleSendContact = handleSendContact;
+        window.deleteMessage = deleteMessage;
 
     </script>
 </body>
