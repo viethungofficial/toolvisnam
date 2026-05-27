@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareFile Pro - Hệ Thống Quản Lý & Tải File Trực Tiếp v5.6.0-Pro</title>
+    <title>ShareFile Pro - Hệ Thống Quản Lý & Tải File Trực Tiếp v5.8.1-Pro</title>
     <!-- Tailwind CSS & DaisyUI -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,6 +14,30 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
+    <!-- KHỞI TẠO CÁC HÀM TOÀN CỤC TẠM THỜI ĐỂ TRÁNH LỖI REFERENCEERROR KHI CLICK TRƯỚC KHI MODULE TẢI XONG -->
+    <script>
+        (function() {
+            const stubFuncs = [
+                'openLoginModal', 'switchTab', 'scrollToSection', 'clearTopSearch', 
+                'syncAndHandleSearch', 'filterAndRender', 'resetFilters', 'setGridCols', 
+                'switchAdminSubtab', 'handleSaveFile', 'toggleUploadType', 
+                'handleLocalFileSelected', 'handleIconFileSelected', 'applyPresetIcon', 
+                'resetFileForm', 'renderAdminFileList', 'handleSaveCategory', 
+                'resetCategoryForm', 'handleSaveGeneralSettings', 'handleSaveMarqueeSettings', 
+                'updateMarqueeSpeedDisplay', 'changeThemeColor', 'filterByCategory', 
+                'handleAdminLogin', 'closeModal', 'triggerDownload', 'copyShareLink', 
+                'showQRCode', 'showFileDetails', 'editFile', 'deleteFile', 
+                'editCategory', 'deleteCategory', 'toggleLoginMode', 'setupEventListeners',
+                'setupDynamicFavicon', 'setupDarkMode', 'setupFirebase', 'loadData'
+            ];
+            stubFuncs.forEach(func => {
+                window[func] = function(...args) {
+                    console.warn(`[ShareFile Pro] Hệ thống đang chuẩn bị tài nguyên... (${func})`);
+                };
+            });
+        })();
+    </script>
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -23,9 +47,9 @@
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#4f46e5',   /* Indigo mặc định */
-                        secondary: '#06b6d4', /* Cyan */
-                        accent: '#10b981',    /* Emerald */
+                        primary: '#4f46e5',   /* Indigo chủ đạo */
+                        secondary: '#06b6d4', /* Cyan phụ */
+                        accent: '#10b981',    /* Emerald nhấn */
                     }
                 }
             }
@@ -43,7 +67,7 @@
             color: white !important;
         }
         .btn-primary:hover {
-            background-color: rgba(var(--primary-rgb), 0.9) !important;
+            background-color: rgba(var(--primary-rgb), 0.85) !important;
         }
         .text-primary {
             color: rgb(var(--primary-rgb)) !important;
@@ -64,14 +88,23 @@
             border-color: rgb(var(--primary-rgb)) !important;
         }
         /* Hiệu ứng Glow cho Social Buttons */
-        .social-btn {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .social-btn:hover {
+        .social-fb:hover {
+            box-shadow: 0 0 18px 5px rgba(24, 119, 242, 0.6) !important;
+            background-color: #1877f2 !important;
+            border-color: #1877f2 !important;
             color: white !important;
-            background-color: rgb(var(--primary-rgb)) !important;
-            border-color: rgb(var(--primary-rgb)) !important;
-            box-shadow: 0 0 18px 5px rgba(var(--primary-rgb), 0.7) !important;
+        }
+        .social-tiktok:hover {
+            box-shadow: 0 0 18px 5px rgba(254, 44, 85, 0.6) !important;
+            background-color: #fe2c55 !important;
+            border-color: #fe2c55 !important;
+            color: white !important;
+        }
+        .social-yt:hover {
+            box-shadow: 0 0 18px 5px rgba(255, 0, 0, 0.6) !important;
+            background-color: #ff0000 !important;
+            border-color: #ff0000 !important;
+            color: white !important;
         }
     </style>
 
@@ -162,6 +195,15 @@
         .dark .table-zebra tbody tr:nth-child(even) {
             background-color: rgba(30, 41, 59, 0.45) !important;
         }
+
+        /* Skeleton Loader Animation */
+        @keyframes pulse-light {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .animate-skeleton {
+            animation: pulse-light 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
     </style>
 </head>
 <body class="bg-[#f8fafc] text-slate-800 dark:bg-[#090d16] dark:text-slate-200 transition-colors duration-300 min-h-screen flex flex-col font-sans">
@@ -174,7 +216,7 @@
         <span class="loading loading-infinity loading-lg text-primary"></span>
         <div class="text-center">
             <h3 class="font-bold text-xl text-primary-content">ShareFile Pro</h3>
-            <p class="text-xs text-slate-400 mt-1">Đang kết nối Cloud Realtime Database...</p>
+            <p class="text-xs text-slate-400 mt-1 font-semibold">Đang đồng bộ hóa cơ sở dữ liệu Cloud...</p>
         </div>
     </div>
 
@@ -182,6 +224,11 @@
     <button id="admin-floating-return" onclick="switchTab('admin')" class="hidden fixed bottom-6 right-6 z-50 btn btn-primary rounded-full shadow-2xl flex items-center gap-2 p-4 transition-all duration-300 hover:scale-105 active:scale-95 border-none animate-pulse hover:animate-none">
         <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
         <span class="text-xs font-black uppercase tracking-wider">Quản trị Admin</span>
+    </button>
+
+    <!-- NÚT CUỘN LÊN ĐẦU TRANG -->
+    <button id="scroll-to-top-btn" class="hidden fixed bottom-24 right-6 z-40 btn btn-circle btn-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i data-lucide="arrow-up" class="w-4 h-4"></i>
     </button>
 
     <!-- HEADER / MENU -->
@@ -197,7 +244,7 @@
                 </div>
                 <div class="text-left">
                     <span id="site-logo-text" class="font-extrabold text-lg bg-gradient-to-r from-indigo-600 to-cyan-500 bg-clip-text text-transparent tracking-tight">ShareFile Pro</span>
-                    <span id="site-logo-subtext" class="block text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Hệ thống tải 1-Click v5.6.0-Pro</span>
+                    <span id="site-logo-subtext" class="block text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Hệ thống tải 1-Click v5.8.1-Pro</span>
                 </div>
             </a>
 
@@ -218,7 +265,7 @@
                 <!-- Thống kê lưu trữ nhanh -->
                 <div class="hidden sm:flex flex-col items-end text-right">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Trạng thái</span>
-                    <span id="db-status-badge" class="badge bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-none badge-sm text-[10px] font-bold">Local Offline</span>
+                    <span id="db-status-badge" class="badge bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-none badge-sm text-[10px] font-bold">Kết nối...</span>
                 </div>
 
                 <!-- Nút Đăng nhập/Đăng xuất Admin -->
@@ -241,8 +288,8 @@
             <!-- Container Marquee chạy vô tận -->
             <div class="w-full overflow-hidden relative">
                 <div class="animate-marquee-infinite text-sm font-semibold text-slate-600 dark:text-slate-300" id="marquee-text-container">
-                    <span id="marquee-text-1">Hệ thống tải file Pro v5.6.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <span id="marquee-text-2">Hệ thống tải file Pro v5.6.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span id="marquee-text-1">Hệ thống tải file Pro v5.8.1 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span id="marquee-text-2">Hệ thống tải file Pro v5.8.1 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </div>
             </div>
         </div>
@@ -263,7 +310,7 @@
                     </div>
                     <!-- Search input box -->
                     <div class="relative w-full md:max-w-lg glowing-input rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 flex items-center">
-                        <input id="top-search-input" type="text" placeholder="Gõ từ khóa tìm nhanh (Office, Driver, Windows, ISO...)..." class="input input-bordered w-full rounded-2xl pl-12 border-none bg-transparent text-sm focus:outline-none focus:ring-0" oninput="syncAndHandleSearch(this.value)">
+                        <input id="top-search-input" type="text" placeholder="Gõ từ khóa tìm nhanh (Office, Driver, Windows, ISO...)..." class="input input-bordered w-full rounded-2xl pl-12 border-none bg-transparent text-sm focus:outline-none focus:ring-0 text-slate-800 dark:text-slate-100" oninput="syncAndHandleSearch(this.value)">
                         <i data-lucide="search" class="w-5 h-5 absolute left-4 text-slate-400"></i>
                         <button onclick="clearTopSearch()" class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden" id="top-clear-search-btn">
                             <i data-lucide="x" class="w-4 h-4"></i>
@@ -327,7 +374,7 @@
                     <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
                         <!-- Ô tìm kiếm đồng bộ -->
                         <div class="relative w-full md:max-w-md glowing-input rounded-2xl border border-slate-200 dark:border-slate-850">
-                            <input id="search-input" type="text" placeholder="Lọc nhanh trong bảng tài nguyên..." class="input input-bordered border-none bg-transparent w-full rounded-2xl pl-12 focus:outline-none focus:ring-0" oninput="syncAndHandleSearch(this.value)">
+                            <input id="search-input" type="text" placeholder="Lọc nhanh trong bảng tài nguyên..." class="input input-bordered border-none bg-transparent w-full rounded-2xl pl-12 focus:outline-none focus:ring-0 text-slate-800 dark:text-slate-100" oninput="syncAndHandleSearch(this.value)">
                             <i data-lucide="sliders-horizontal" class="w-5 h-5 absolute left-4 top-3.5 text-slate-400"></i>
                             <button onclick="clearSearch()" class="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600 hidden" id="clear-search-btn">
                                 <i data-lucide="x" class="w-4 h-4"></i>
@@ -382,7 +429,7 @@
 
                     <!-- Grid chứa Files -->
                     <div id="files-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Các File Card sẽ được render động ở đây -->
+                        <!-- Skeletons sẽ xuất hiện ở đây -->
                     </div>
 
                     <!-- Phân trang -->
@@ -401,7 +448,7 @@
                     <div>
                         <div class="inline-flex items-center gap-1.5 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2.5 py-0.5 rounded text-xs font-bold">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Admin Mode Active v5.6.0-Pro
+                            Admin Mode Active v5.7.0-Pro
                         </div>
                         <h1 class="text-3xl font-black mt-1">Bảng Điều Khiển Quản Trị</h1>
                         <p class="text-xs text-slate-400 mt-1">Quản lý tệp dữ liệu, đổi màu chủ đạo hệ thống và cấu hình giao diện</p>
@@ -411,7 +458,7 @@
                         <button onclick="switchTab('home')" class="btn btn-outline btn-sm text-white border-white/20 hover:bg-white/10 rounded-xl">
                             <i data-lucide="eye" class="w-4 h-4"></i> Xem Website (Live)
                         </button>
-                        <button onclick="handleLogout()" class="btn btn-error btn-sm rounded-xl text-white">
+                        <button onclick="handleLogout()" class="btn btn-error btn-sm rounded-xl text-white border-none">
                             <i data-lucide="log-out" class="w-4 h-4"></i> Thoát Admin
                         </button>
                     </div>
@@ -482,7 +529,7 @@
                                     <i data-lucide="file-plus" class="w-5 h-5 text-indigo-500"></i>
                                     Thêm / Cập Nhật File Tài Nguyên
                                 </h3>
-                                <div class="badge badge-primary font-bold bg-indigo-600 border-none">v5.6.0 Form</div>
+                                <div class="badge badge-primary font-bold bg-indigo-600 border-none">v5.7.0 Form</div>
                             </div>
                             
                             <!-- Form thêm file -->
@@ -491,19 +538,19 @@
                                 
                                 <div class="form-control">
                                     <label class="label"><span class="label-text font-bold text-xs text-slate-700 dark:text-slate-300">Tiêu đề / Tên file *</span></label>
-                                    <input type="text" id="file-title" required placeholder="Ví dụ: Office Tool 2026 Kích Hoạt Tự Động" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                                    <input type="text" id="file-title" required placeholder="Ví dụ: Office Tool 2026 Kích Hoạt Tự Động" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30">
                                 </div>
                                 
                                 <div class="form-control">
                                     <label class="label"><span class="label-text font-bold text-xs text-slate-700 dark:text-slate-300">Danh mục tài nguyên *</span></label>
-                                    <select id="file-category" required class="select select-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                                    <select id="file-category" required class="select select-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                                         <!-- Danh mục sẽ được nạp động -->
                                     </select>
                                 </div>
 
                                 <div class="form-control md:col-span-2">
                                     <label class="label"><span class="label-text font-bold text-xs text-slate-700 dark:text-slate-300">Mô tả ngắn tài nguyên *</span></label>
-                                    <textarea id="file-desc" required placeholder="Mô tả công dụng và các tính năng nổi bật của file này..." class="textarea textarea-bordered rounded-xl h-20 bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200"></textarea>
+                                    <textarea id="file-desc" required placeholder="Mô tả công dụng và các tính năng nổi bật của file này..." class="textarea textarea-bordered rounded-xl h-20 bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-indigo-500"></textarea>
                                 </div>
 
                                 <!-- Cách thức Upload -->
@@ -530,7 +577,7 @@
                                                 <i data-lucide="cloud-upload" class="w-6 h-6"></i>
                                             </div>
                                             <p id="upload-status-text" class="text-xs font-bold text-slate-700 dark:text-slate-200">Kéo & Thả file vào đây hoặc click để chọn từ PC</p>
-                                            <p class="text-[10px] text-slate-400 dark:text-slate-500">Dữ liệu được mã hóa cục bộ thành dạng nén để chia sẻ.</p>
+                                            <p class="text-[10px] text-slate-400 dark:text-slate-500">Dữ liệu được mã hóa nén cực kỳ mượt mà.</p>
                                         </div>
                                         <input type="file" id="file-local-upload" class="hidden" onchange="handleLocalFileSelected(this)">
                                     </div>
@@ -539,7 +586,7 @@
                                 <!-- Dán link ngoài -->
                                 <div id="upload-external-group" class="form-control md:col-span-2 hidden">
                                     <label class="label"><span class="label-text font-bold text-xs text-slate-700 dark:text-slate-300">Dán Link tải ngoài (Google Drive, Github, Dropbox...) *</span></label>
-                                    <input type="url" id="file-external-url" placeholder="https://drive.google.com/file/d/... hoặc link direct..." class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                                    <input type="url" id="file-external-url" placeholder="https://drive.google.com/file/d/... hoặc link direct..." class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                                 </div>
 
                                 <!-- Upload ICON tùy chỉnh -->
@@ -574,23 +621,23 @@
                                 <!-- Cấu hình kích thước & ghim & hiển thị -->
                                 <div class="form-control">
                                     <label class="label"><span class="label-text font-bold text-xs text-slate-700 dark:text-slate-300">Dung lượng File hiển thị (MB)</span></label>
-                                    <input type="text" id="file-size-display" placeholder="Ví dụ: 25.5 MB hoặc Tự Động" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                                    <input type="text" id="file-size-display" placeholder="Ví dụ: 25.5 MB hoặc Tự Động" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                                 </div>
 
-                                <div class="flex items-center gap-6 p-2 text-slate-700 dark:text-slate-200">
+                                <div class="flex items-center gap-6 p-2 text-slate-700 dark:text-slate-200 font-bold">
                                     <label class="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" id="file-pinned" class="checkbox checkbox-primary border-slate-400 dark:border-slate-600">
-                                        <span class="text-xs font-bold">Ghim lên đầu</span>
+                                        <span class="text-xs">Ghim lên đầu</span>
                                     </label>
                                     <label class="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" id="file-visible" checked class="checkbox checkbox-primary border-slate-400 dark:border-slate-600">
-                                        <span class="text-xs font-bold">Hiển thị ra ngoài</span>
+                                        <span class="text-xs">Hiển thị ra ngoài</span>
                                     </label>
                                 </div>
 
                                 <div class="md:col-span-2 pt-4 flex gap-2 justify-end">
                                     <button type="button" onclick="resetFileForm()" class="btn btn-ghost rounded-xl">Nhập lại</button>
-                                    <button type="submit" class="btn btn-primary rounded-xl px-8 shadow-md bg-indigo-600 border-none hover:bg-indigo-700">
+                                    <button type="submit" class="btn btn-primary rounded-xl px-8 shadow-md bg-indigo-600 border-none hover:bg-indigo-700 text-white">
                                         <i data-lucide="save" class="w-4 h-4"></i> Lưu Tài Nguyên
                                     </button>
                                 </div>
@@ -608,7 +655,7 @@
                                 <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs flex gap-2.5 items-start">
                                     <span class="p-1 rounded bg-green-500/10 text-emerald-500 mt-0.5"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>
                                     <div>
-                                        <p class="font-bold text-slate-700 dark:text-slate-300">Khởi tạo hệ thống v5.6.0 Pro</p>
+                                        <p class="font-bold text-slate-700 dark:text-slate-300">Khởi tạo hệ thống v5.7.0 Pro</p>
                                         <p class="text-slate-400 text-[9px] dark:text-slate-500">Vừa xong • Admin</p>
                                     </div>
                                 </div>
@@ -622,7 +669,7 @@
                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
                         <span class="font-bold text-sm text-slate-800 dark:text-slate-200">Danh Sách Toàn Bộ File Hệ Thống</span>
                         <div class="relative w-full sm:max-w-xs glowing-input rounded-xl border border-slate-200 dark:border-slate-800">
-                            <input id="admin-search-file" type="text" placeholder="Tìm kiếm nhanh..." class="input input-sm border-none bg-white dark:bg-slate-900/50 w-full rounded-xl pl-9" oninput="renderAdminFileList()">
+                            <input id="admin-search-file" type="text" placeholder="Tìm kiếm nhanh..." class="input input-sm border-none bg-white dark:bg-slate-900/50 w-full rounded-xl pl-9 text-slate-800 dark:text-slate-100" oninput="renderAdminFileList()">
                             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-400"></i>
                         </div>
                     </div>
@@ -657,19 +704,19 @@
                             <input type="hidden" id="edit-category-id">
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold text-slate-700 dark:text-slate-300">Tên Danh Mục *</span></label>
-                                <input type="text" id="category-name" required placeholder="Ví dụ: Công cụ thiết kế" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                                <input type="text" id="category-name" required placeholder="Ví dụ: Công cụ thiết kế" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold text-slate-700 dark:text-slate-300">Mã định danh (Slug) *</span></label>
-                                <input type="text" id="category-slug" required placeholder="Ví dụ: cong-cu-thiet-ke" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                                <input type="text" id="category-slug" required placeholder="Ví dụ: cong-cu-thiet-ke" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold text-slate-700 dark:text-slate-300">Ký hiệu (Emoji) *</span></label>
-                                <input type="text" id="category-emoji" required placeholder="Ví dụ: 🎨" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                                <input type="text" id="category-emoji" required placeholder="Ví dụ: 🎨" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                             </div>
                             <div class="flex gap-2 justify-end pt-2">
                                 <button type="button" onclick="resetCategoryForm()" class="btn btn-ghost btn-sm rounded-xl">Reset</button>
-                                <button type="submit" class="btn btn-primary btn-sm rounded-xl px-5 bg-indigo-600 border-none">Lưu danh mục</button>
+                                <button type="submit" class="btn btn-primary btn-sm rounded-xl px-5 bg-indigo-600 border-none text-white font-bold">Lưu danh mục</button>
                             </div>
                         </form>
                     </div>
@@ -703,11 +750,11 @@
                         <form id="settings-general-form" onsubmit="handleSaveGeneralSettings(event)" class="space-y-4">
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold text-xs text-slate-500">Tên Website chính (Logo)</span></label>
-                                <input type="text" id="setting-site-name" placeholder="ShareFile Pro" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200">
+                                <input type="text" id="setting-site-name" placeholder="ShareFile Pro" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold text-xs text-slate-500">Tiêu đề phụ dưới Logo</span></label>
-                                <input type="text" id="setting-site-subtitle" placeholder="Hệ thống tải 1-Click v5.6.0-Pro" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200">
+                                <input type="text" id="setting-site-subtitle" placeholder="Hệ thống tải 1-Click v5.7.0-Pro" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 focus:border-indigo-500">
                             </div>
                             
                             <!-- Đổi màu chủ đạo -->
@@ -723,7 +770,7 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-sm rounded-xl bg-indigo-600 border-none">Lưu cấu hình</button>
+                            <button type="submit" class="btn btn-primary btn-sm rounded-xl bg-indigo-600 border-none text-white font-bold">Lưu cấu hình</button>
                         </form>
                     </div>
 
@@ -733,7 +780,7 @@
                         <form id="settings-marquee-form" onsubmit="handleSaveMarqueeSettings(event)" class="space-y-4">
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold text-xs text-slate-500">Nội dung thông báo mới</span></label>
-                                <textarea id="setting-marquee-text" required class="textarea textarea-bordered rounded-xl h-24 bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200" placeholder="Nhập nội dung thông báo..."></textarea>
+                                <textarea id="setting-marquee-text" required class="textarea textarea-bordered rounded-xl h-24 bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 focus:border-indigo-500" placeholder="Nhập nội dung thông báo..."></textarea>
                             </div>
 
                             <!-- TỐC ĐỘ THEO PRESETS (Bình thường, Nhanh x2, Nhanh x3) -->
@@ -742,18 +789,18 @@
                                     <span class="label-text font-bold text-xs text-slate-500">Tốc độ chạy chữ thông báo</span>
                                     <span id="marquee-speed-display" class="text-xs font-black text-indigo-600">Bình thường</span>
                                 </label>
-                                <select id="setting-marquee-speed" class="select select-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 text-xs font-bold" onchange="updateMarqueeSpeedDisplay(this.value)">
+                                <select id="setting-marquee-speed" class="select select-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 text-xs font-bold focus:border-indigo-500" onchange="updateMarqueeSpeedDisplay(this.value)">
                                     <option value="30">Bình thường</option>
                                     <option value="15">Nhanh x2</option>
                                     <option value="8">Nhanh x3</option>
                                 </select>
                             </div>
 
-                            <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200">
+                            <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200 font-bold">
                                 <input type="checkbox" id="setting-marquee-visible" checked class="checkbox checkbox-primary">
-                                <span class="text-xs font-bold">Hiển thị thanh thông báo ngoài trang chủ</span>
+                                <span class="text-xs">Hiển thị thanh thông báo ngoài trang chủ</span>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-sm rounded-xl bg-indigo-600 border-none">Cập nhật thông báo</button>
+                            <button type="submit" class="btn btn-primary btn-sm rounded-xl bg-indigo-600 border-none text-white font-bold">Cập nhật thông báo</button>
                         </form>
                     </div>
                 </div>
@@ -783,23 +830,23 @@
             <!-- Version Info & Socials với hiệu ứng phát sáng mượt mà -->
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="text-[11px] text-slate-500 text-center md:text-right">
-                    Phiên bản: <span class="text-indigo-400 font-bold">v5.6.0-Pro Enterprise</span> • Bản quyền thuộc ShareFile © 2026
+                    Phiên bản: <span class="text-indigo-400 font-bold">v5.8.1-Pro Enterprise</span> • Bản quyền thuộc ShareFile © 2026
                 </div>
                 <div class="flex gap-2">
                     <!-- Facebook (Chuẩn) -->
-                    <a href="https://www.facebook.com/ChuHungShipper9x" target="_blank" class="social-btn btn btn-circle btn-sm bg-slate-900 border border-slate-800 text-slate-300" title="Facebook">
+                    <a href="https://www.facebook.com/ChuHungShipper9x" target="_blank" class="social-btn social-fb btn btn-circle btn-sm bg-slate-900 border border-slate-800 text-slate-300" title="Facebook">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                             <path d="M9 8H7v3h2v9h3v-9h3.6l.4-3H12V6c0-.9.1-1.2 1-1.2H15V1h-3.3C9.1 1 9 2.5 9 4.8V8z"/>
                         </svg>
                     </a>
                     <!-- TikTok (Chuẩn) -->
-                    <a href="https://www.tiktok.com/@viethungofficial" target="_blank" class="social-btn btn btn-circle btn-sm bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-center" title="TikTok">
+                    <a href="https://www.tiktok.com/@viethungofficial" target="_blank" class="social-btn social-tiktok btn btn-circle btn-sm bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-center" title="TikTok">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                             <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.62 4.18 1.23 1.34 2.97 2.14 4.79 2.29V10.4c-1.61-.06-3.17-.63-4.47-1.59-.11-.08-.18-.08-.25.03-.43.68-.96 1.28-1.58 1.79-.1.08-.1.14-.1.26.01 2.3-.01 4.6.01 6.9-.02 1.9-.41 3.82-1.35 5.43-1.32 2.16-3.56 3.65-6.07 3.84-2.52.23-5.18-.45-7.07-2.18C.1 23.23-.52 20.35.34 17.65c.66-2.01 2.18-3.76 4.18-4.63.85-.36 1.77-.55 2.69-.58.12-.01.16-.06.16-.17-.01-1.31-.01-2.61-.01-3.92-.06.01-.13 0-.19.01-1.42.11-2.83.6-4.01 1.43C1.65 10.98.54 12.63.15 14.58c-.5 2.5.15 5.17 1.76 7.21 1.83 2.3 4.63 3.57 7.52 3.32 2.89-.24 5.56-1.92 6.88-4.5 1.01-1.96 1.28-4.27 1.25-6.47-.02-3.19-.01-6.38-.02-9.56-.93.63-1.98 1.09-3.09 1.35-.1.02-.15 0-.19-.08-.54-.95-1.34-1.74-2.29-2.28-.1-.06-.11-.11-.08-.21.14-.54.21-1.1.25-1.66z"/>
                         </svg>
                     </a>
                     <!-- YouTube (Chuẩn) -->
-                    <a href="https://www.youtube.com/@viethungofficial1506" target="_blank" class="social-btn btn btn-circle btn-sm bg-slate-900 border border-slate-800 text-slate-300" title="YouTube">
+                    <a href="https://www.youtube.com/@viethungofficial1506" target="_blank" class="social-btn social-yt btn btn-circle btn-sm bg-slate-900 border border-slate-800 text-slate-300" title="YouTube">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                             <path d="M23.5 6.2c-.3-1.1-1.1-1.9-2.2-2.2C19.4 3.5 12 3.5 12 3.5s-7.4 0-9.3.5c-1.1.3-1.9 1.1-2.2 2.2C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1.1 1.1 1.9 2.2 2.2 1.9.5 9.3.5 9.3.5s7.4 0 9.3-.5c1.1-.3 1.9-1.1 2.2-2.2.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zm-14 9.3V8.5l6 3.5-6 3.5z"/>
                         </svg>
@@ -823,24 +870,28 @@
                 <div id="login-firebase-fields" class="space-y-4 hidden">
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Email Quản Trị *</span></label>
-                        <input type="email" id="admin-email" placeholder="Nhập email quản trị" autocomplete="off" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
+                        <input type="email" id="admin-email" placeholder="Nhập email quản trị" autocomplete="off" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25">
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mật khẩu bảo mật *</span></label>
-                        <input type="password" id="admin-password-cloud" placeholder="Nhập mật khẩu" autocomplete="new-password" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
+                        <input type="password" id="admin-password-cloud" placeholder="Nhập mật khẩu" autocomplete="new-password" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25">
                     </div>
                 </div>
 
-                <!-- Vùng nhập cho chế độ Offline cục bộ (Bảo mật không gợi ý mã PIN cũ) -->
+                <!-- Vùng nhập cho chế độ PIN cục bộ -->
                 <div id="login-local-fields" class="form-control">
                     <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mã PIN Quản Trị *</span></label>
-                    <input type="password" id="admin-password-local" placeholder="Nhập mã PIN xác thực" autocomplete="new-password" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
+                    <input type="password" id="admin-password-local" placeholder="Nhập mã PIN xác thực" autocomplete="new-password" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25">
                 </div>
 
-                <button type="submit" class="btn btn-primary w-full rounded-xl shadow-lg mt-2 bg-indigo-600 border-none hover:bg-indigo-700 font-bold">Xác Nhận Đăng Nhập</button>
+                <button type="submit" class="btn btn-primary w-full rounded-xl shadow-lg mt-2 bg-indigo-600 border-none hover:bg-indigo-700 font-bold text-white">Xác Nhận Đăng Nhập</button>
             </form>
             
-            <div class="modal-action justify-center">
+            <div class="text-center mt-4">
+                <button onclick="toggleLoginMode()" class="text-xs text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold underline" id="btn-toggle-login-mode">Sử dụng mã PIN dự phòng</button>
+            </div>
+            
+            <div class="modal-action justify-center mt-2">
                 <button onclick="closeModal('login-modal')" class="btn btn-sm btn-ghost rounded-xl text-xs text-slate-400 hover:text-slate-600">Hủy bỏ</button>
             </div>
         </div>
@@ -859,7 +910,7 @@
             <p id="qr-file-title" class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">Tên File</p>
             
             <div class="modal-action justify-center">
-                <button onclick="closeModal('qr-modal')" class="btn btn-sm btn-primary rounded-xl bg-indigo-600 border-none">Hoàn tất</button>
+                <button onclick="closeModal('qr-modal')" class="btn btn-sm btn-primary rounded-xl bg-indigo-600 border-none text-white font-bold">Hoàn tất</button>
             </div>
         </div>
     </div>
@@ -868,7 +919,7 @@
     <div id="file-detail-modal" class="modal modal-bottom sm:modal-middle">
         <div class="modal-box glass-panel max-w-md rounded-3xl border border-slate-200/50 dark:border-slate-800/50">
             <div class="flex items-start gap-3">
-                <div id="detail-file-icon" class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-3xl shrink-0 shadow-md border border-slate-200/30 dark:border-slate-800/30">
+                <div id="detail-file-icon" class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-3xl shrink-0 shadow-md border border-slate-200/30 dark:border-slate-800/30 overflow-hidden">
                     📂
                 </div>
                 <div class="space-y-1 text-left">
@@ -877,7 +928,7 @@
                 </div>
             </div>
 
-            <p id="detail-file-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-4 leading-relaxed bg-slate-100/50 dark:bg-slate-900/50 p-3 rounded-xl text-left">
+            <p id="detail-file-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-4 leading-relaxed bg-slate-100/50 dark:bg-slate-900/50 p-3 rounded-xl text-left leading-normal">
                 Không có mô tả chi tiết cho tập tin này.
             </p>
 
@@ -901,7 +952,7 @@
             </div>
 
             <div class="flex flex-col gap-2 mt-6">
-                <button id="detail-download-btn" class="btn btn-primary w-full rounded-2xl shadow-lg flex items-center gap-1.5 py-3 h-auto bg-indigo-600 border-none hover:bg-indigo-700">
+                <button id="detail-download-btn" class="btn btn-primary w-full rounded-2xl shadow-lg flex items-center gap-1.5 py-3 h-auto bg-indigo-600 border-none hover:bg-indigo-700 text-white font-bold">
                     <i data-lucide="download" class="w-5 h-5"></i>
                     TẢI XUỐNG NGAY (TỐC ĐỘ CAO)
                 </button>
@@ -977,11 +1028,11 @@
             ],
             settings: {
                 siteName: 'ShareFile Pro',
-                siteSubtitle: 'Hệ thống tải 1-Click v5.6.0-Pro', // Tiêu đề phụ logo
+                siteSubtitle: 'Hệ thống tải 1-Click v5.8.1-Pro', // Tiêu đề phụ logo
                 heroTitle: 'Tải Xuống File Trực Tiếp Chỉ Với 1 Cú Click',
                 heroDesc: 'Kho phần mềm, Driver, Tài liệu và ISO Windows chất lượng cao. Tất cả tệp đều được kiểm tra an toàn và có liên kết trực tiếp tốc độ cực nhanh.',
                 themeColor: '#4f46e5',
-                marqueeText: 'Hệ thống tải file Pro v5.6.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động.',
+                marqueeText: 'Hệ thống tải file Pro v5.8.1 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động.',
                 marqueeVisible: true,
                 marqueeSpeed: 30 // Tốc độ chạy (30: Bình thường, 15: Nhanh x2, 8: Nhanh x3)
             },
@@ -996,7 +1047,8 @@
             },
             ui: {
                 gridCols: 3,
-                isAdmin: false
+                isAdmin: false,
+                loginMode: 'cloud' // 'cloud' (Email/Pass) hoặc 'local' (PIN)
             }
         };
 
@@ -1061,58 +1113,100 @@
         ];
 
         // --- HÀM KHỞI CHẠY CHÍNH (ONLOAD) ---
+        // SỬA LỖI: Thêm khối try/catch đa tầng vững chắc bao quanh DomContentLoaded để KHÔNG BAO GIỜ bị treo Loading!
         window.addEventListener('DOMContentLoaded', async () => {
-            // Định nghĩa & nhúng Favicon SVG cao động
+            // 1. Khởi động Favicon & DarkMode luôn chạy độc lập trước
             setupDynamicFavicon();
+            setupDarkMode();
             
-            lucide.createIcons();
-
-            // Khôi phục cài đặt cục bộ trước
-            const localSettings = localStorage.getItem('s_settings');
-            if (localSettings) {
-                state.settings = JSON.parse(localSettings);
+            try {
+                lucide.createIcons();
+            } catch (e) {
+                console.error("Lỗi nạp Lucide icons:", e);
             }
 
-            // Khởi tạo Firebase nếu có cấu hình
-            await setupFirebase();
+            // Khôi phục bộ nhớ đệm Offline trước
+            try {
+                const localSettings = localStorage.getItem('s_settings');
+                if (localSettings) {
+                    state.settings = JSON.parse(localSettings);
+                }
+            } catch (e) {
+                console.warn("Không thể nạp bộ nhớ đệm Settings:", e);
+            }
 
-            // Setup Darkmode
-            setupDarkMode();
+            // 2. Kết nối Firebase an toàn
+            try {
+                await setupFirebase();
+            } catch (err) {
+                console.error("Lỗi cấu hình Firebase:", err);
+                useLocalMode();
+            }
 
-            // Tải dữ liệu từ LocalStorage hoặc Firebase
-            await loadData();
+            // 3. Nạp dữ liệu đám mây (Fallback về LocalStorage nếu thất bại)
+            try {
+                await loadData();
+            } catch (err) {
+                console.error("Lỗi nạp dữ liệu đám mây:", err);
+                useLocalMode();
+                loadLocalBackup();
+            }
 
-            // Kiểm tra Share Link Query (?fileId=...)
-            checkShareLink();
+            // 4. Khởi tạo chức năng giao diện người dùng
+            try {
+                checkShareLink();
+                setupEventListeners();
+            } catch (err) {
+                console.error("Lỗi khởi tạo UI:", err);
+            }
 
-            // Thêm các Event Listener
-            setupEventListeners();
-
-            // Ẩn màn hình loading
+            // 5. CHẮC CHẮN ĐÓNG MÀN HÌNH LOADING TRONG MỌI TRƯỜNG HỢP!
             const loader = document.getElementById('app-loader');
             if (loader) {
                 loader.classList.add('opacity-0');
-                setTimeout(() => loader.remove(), 500);
+                setTimeout(() => {
+                    try {
+                        loader.remove();
+                    } catch (e) {}
+                }, 500);
             }
         });
 
         // Tự động tạo Favicon SVG chất lượng cao dựa trên biểu tượng thương hiệu
         function setupDynamicFavicon() {
-            const faviconSVG = `
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
-                    <path d='M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z'/>
-                    <polyline points='12 10 12 16 14 14 12 16 10 14'/>
-                </svg>
-            `;
-            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-            link.type = 'image/svg+xml';
-            link.rel = 'icon';
-            link.href = 'data:image/svg+xml;utf8,' + encodeURIComponent(faviconSVG);
-            document.getElementsByTagName('head')[0].appendChild(link);
+            try {
+                const faviconSVG = `
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+                        <path d='M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z'/>
+                        <polyline points='12 10 12 16 14 14 12 16 10 14'/>
+                    </svg>
+                `;
+                const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+                link.type = 'image/svg+xml';
+                link.rel = 'icon';
+                link.href = 'data:image/svg+xml;utf8,' + encodeURIComponent(faviconSVG);
+                if (!link.parentNode) {
+                    document.head.appendChild(link);
+                }
+            } catch (e) {
+                console.error("Lỗi tạo Favicon:", e);
+            }
         }
 
-        // --- KHỞI TẠO FIREBASE (TUÂN THỦ HOÀN TOÀN RULE 3: AUTH TRƯỚC TRUY VẤN) ---
-        // SỬA LỖI: Loại bỏ tất cả thông báo welcome/cảnh báo tự động lúc tải trang
+        // --- HÀM THIẾT LẬP DARK MODE ---
+        function setupDarkMode() {
+            try {
+                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // --- KHỞI TẠO FIREBASE (RULE 3: AUTH TRƯỚC TRUY VẤN - KHÔNG TREO KHI BỊ CHẶN) ---
         async function setupFirebase() {
             try {
                 const app = initializeApp(firebaseConfig);
@@ -1120,55 +1214,81 @@
                 db = getFirestore(app);
                 isFirebaseActive = true; // Đánh dấu SDK Firebase đã khởi tạo thành công
 
-                // Lắng nghe thay đổi trạng thái Auth trước để xử lý quyền đăng nhập Admin và Khách
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                    if (user) {
-                        updateLoginModalInterface(true);
+                // Chờ cho session xác nhận để tránh lỗi phân quyền (Không cho phép treo quá 4 giây)
+                await new Promise((resolve) => {
+                    let hasResolved = false;
+                    
+                    // Thiết lập Timeout 4 giây nếu Google Services phản hồi quá chậm
+                    const safetyTimeout = setTimeout(() => {
+                        if (!hasResolved) {
+                            console.warn("Firebase Auth phản hồi quá chậm, kích hoạt chế độ tải an toàn.");
+                            hasResolved = true;
+                            resolve();
+                        }
+                    }, 4000);
 
-                        if (!user.isAnonymous) {
-                            state.ui.isAdmin = true;
-                            logSystemActivity(`Admin đăng nhập thành công qua Cloud Auth: ${user.email}`, 'success');
-                            updateAdminAuthenticationHeader();
+                    onAuthStateChanged(auth, (user) => {
+                        currentUser = user;
+                        if (user) {
+                            updateLoginModalInterface(true);
+
+                            if (!user.isAnonymous) {
+                                state.ui.isAdmin = true;
+                                logSystemActivity(`Admin đăng nhập thành công qua Cloud Auth: ${user.email}`, 'success');
+                                updateAdminAuthenticationHeader();
+                            } else {
+                                state.ui.isAdmin = false;
+                                updateAdminAuthenticationHeader();
+                            }
+
+                            const badge = document.getElementById('db-status-badge');
+                            if (badge) {
+                                badge.className = 'badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none badge-sm text-[10px] font-bold';
+                                badge.innerText = 'Cloud Realtime';
+                            }
+                            
+                            // Thiết lập đồng bộ thời gian thực từ Cloud Firestore (Rule 1 & Rule 2)
+                            syncRealtimeListeners();
                         } else {
+                            updateLoginModalInterface(true);
                             state.ui.isAdmin = false;
                             updateAdminAuthenticationHeader();
+                            const badge = document.getElementById('db-status-badge');
+                            if (badge) {
+                                badge.className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
+                                badge.innerText = 'Cloud (Chưa Auth)';
+                            }
                         }
 
-                        document.getElementById('db-status-badge').className = 'badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none badge-sm text-[10px] font-bold';
-                        document.getElementById('db-status-badge').innerText = 'Cloud Realtime';
-                        
-                        // Đồng bộ dữ liệu Firestore Cloud (Rule 3)
-                        syncRealtimeListeners();
-                    } else {
-                        // Trường hợp không đăng nhập (Hoặc chưa kích hoạt Anonymous Auth)
-                        updateLoginModalInterface(true);
-                        state.ui.isAdmin = false;
-                        updateAdminAuthenticationHeader();
-                        document.getElementById('db-status-badge').className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
-                        document.getElementById('db-status-badge').innerText = 'Cloud (Chưa Auth)';
-                    }
-                });
+                        if (!hasResolved) {
+                            clearTimeout(safetyTimeout);
+                            hasResolved = true;
+                            resolve();
+                        }
+                    });
 
-                // Thực hiện phiên đăng nhập tự động
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    // Thực hiện phiên đăng nhập tự động nặc danh dưới nền
+                    (async () => {
                         try {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } catch (tokenError) {
-                            console.warn("Lỗi Custom Token, tự động thử đăng nhập nặc danh:", tokenError);
-                            await signInAnonymously(auth);
+                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                try {
+                                    await signInWithCustomToken(auth, __initial_auth_token);
+                                } catch (tokenError) {
+                                    await signInAnonymously(auth);
+                                }
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (authError) {
+                            console.warn("Anonymous Auth chưa được bật trên Firebase Console. Đang chạy chế độ Khách Offline:", authError);
+                            if (!hasResolved) {
+                                clearTimeout(safetyTimeout);
+                                hasResolved = true;
+                                resolve();
+                            }
                         }
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (authError) {
-                    // SỬA LỖI: Bắt lỗi auth/admin-restricted-operation khi Anonymous Auth bị tắt
-                    console.warn("Thông báo bảo mật: Anonymous Auth chưa được bật trên Firebase Console. Đang chuyển sang chế độ Khách Offline nhưng vẫn sẵn sàng kết nối Admin Email!", authError);
-                    
-                    // Fallback tải dữ liệu offline để tránh màn hình trống
-                    await loadData();
-                }
+                    })();
+                });
 
             } catch (error) {
                 console.error("Lỗi khởi tạo Firebase: ", error);
@@ -1179,8 +1299,11 @@
         function useLocalMode() {
             isFirebaseActive = false;
             updateLoginModalInterface(false);
-            document.getElementById('db-status-badge').className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
-            document.getElementById('db-status-badge').innerText = 'Local Offline';
+            const badge = document.getElementById('db-status-badge');
+            if (badge) {
+                badge.className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
+                badge.innerText = 'Local Offline';
+            }
         }
 
         // Cập nhật giao diện Modal đăng nhập tương ứng với trạng thái kết nối Firebase
@@ -1188,21 +1311,39 @@
             const sub = document.getElementById('login-modal-sub');
             const firebaseFields = document.getElementById('login-firebase-fields');
             const localFields = document.getElementById('login-local-fields');
+            const btnToggle = document.getElementById('btn-toggle-login-mode');
 
             if (firebaseActive) {
-                sub.innerText = 'Đăng nhập bảo mật bằng tài khoản quản trị viên';
-                firebaseFields.classList.remove('hidden');
-                localFields.classList.add('hidden');
+                if (state.ui.loginMode === 'cloud') {
+                    if (sub) sub.innerText = 'Đăng nhập bảo mật bằng tài khoản quản trị viên';
+                    if (firebaseFields) firebaseFields.classList.remove('hidden');
+                    if (localFields) localFields.classList.add('hidden');
+                    if (btnToggle) btnToggle.innerText = 'Sử dụng mã PIN dự phòng';
+                } else {
+                    if (sub) sub.innerText = 'Sử dụng mã PIN dự phòng ngoại tuyến';
+                    if (firebaseFields) firebaseFields.classList.add('hidden');
+                    if (localFields) localFields.classList.remove('hidden');
+                    if (btnToggle) btnToggle.innerText = 'Sử dụng tài khoản đám mây';
+                }
+                if (btnToggle) btnToggle.classList.remove('hidden');
             } else {
-                sub.innerText = 'Nhập mã PIN dự phòng lưu trữ ngoại tuyến cục bộ';
-                firebaseFields.classList.add('hidden');
-                localFields.classList.remove('hidden');
+                if (sub) sub.innerText = 'Nhập mã PIN dự phòng lưu trữ ngoại tuyến cục bộ';
+                if (firebaseFields) firebaseFields.classList.add('hidden');
+                if (localFields) localFields.classList.remove('hidden');
+                if (btnToggle) btnToggle.classList.add('hidden');
             }
+        }
+
+        // Chuyển đổi qua lại giữa Đăng nhập Cloud và PIN dự phòng
+        function toggleLoginMode() {
+            state.ui.loginMode = state.ui.loginMode === 'cloud' ? 'local' : 'cloud';
+            updateLoginModalInterface(isFirebaseActive);
         }
 
         // Cập nhật trạng thái Admin ở Header & FAB sau khi Login/Logout
         function updateAdminAuthenticationHeader() {
             const authSection = document.getElementById('admin-auth-section');
+            if (!authSection) return;
             if (state.ui.isAdmin) {
                 authSection.innerHTML = `
                     <button onclick="switchTab('admin')" class="btn btn-secondary btn-sm rounded-xl px-4 flex items-center gap-1 shadow-md hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700 text-white animate-pulse">
@@ -1212,7 +1353,7 @@
                 `;
             } else {
                 authSection.innerHTML = `
-                    <button onclick="openLoginModal()" class="btn btn-primary btn-sm rounded-xl px-4 flex items-center gap-1.5 shadow-md hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700">
+                    <button onclick="openLoginModal()" class="btn btn-primary btn-sm rounded-xl px-4 flex items-center gap-1.5 shadow-md hover:scale-105 transition-all bg-indigo-600 border-none hover:bg-indigo-700 text-white">
                         <i data-lucide="shield-alert" class="w-4 h-4"></i>
                         <span>Admin</span>
                     </button>
@@ -1225,12 +1366,13 @@
         function syncRealtimeListeners() {
             if (!isFirebaseActive || !db || !currentUser) return;
 
-            // Rule 1: Đường dẫn nghiêm ngặt cho collection public
             const filesCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'files');
             const catCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'categories');
 
-            // Lắng nghe real-time dữ liệu Files (Rule 2: Lấy dữ liệu phẳng, lọc phân trang xử lý tại Client RAM)
-            onSnapshot(filesCollRef, (snapshot) => {
+            if (window.unsubscribeFiles) window.unsubscribeFiles();
+            if (window.unsubscribeCategories) window.unsubscribeCategories();
+
+            window.unsubscribeFiles = onSnapshot(filesCollRef, (snapshot) => {
                 const filesList = [];
                 snapshot.forEach(doc => {
                     filesList.push({ id: doc.id, ...doc.data() });
@@ -1241,8 +1383,7 @@
                 console.error("Lỗi Firestore Files: ", error);
             });
 
-            // Lắng nghe real-time Danh mục
-            onSnapshot(catCollRef, (snapshot) => {
+            window.unsubscribeCategories = onSnapshot(catCollRef, (snapshot) => {
                 const catList = [{ id: 'all', name: 'Tất cả', slug: 'all', emoji: '🌟' }];
                 snapshot.forEach(doc => {
                     catList.push({ id: doc.id, ...doc.data() });
@@ -1259,16 +1400,28 @@
 
         // --- TẢI DỮ LIỆU ĐỒNG BỘ ---
         async function loadData() {
-            if (isFirebaseActive && db && currentUser) {
-                // Tải cài đặt trang web từ Firestore Cloud
-                const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
-                const configSnap = await getDoc(configDocRef);
-                if (configSnap.exists()) {
-                    state.settings = configSnap.data();
-                    applySiteSettings();
+            try {
+                if (isFirebaseActive && db && currentUser) {
+                    const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
+                    const configSnap = await getDoc(configDocRef);
+                    if (configSnap.exists()) {
+                        state.settings = configSnap.data();
+                        applySiteSettings();
+                    } else {
+                        loadLocalBackup();
+                    }
+                } else {
+                    loadLocalBackup();
                 }
-            } else {
-                // Tải từ LocalStorage (Offline mode)
+            } catch (err) {
+                console.warn("Không thể tải cài đặt từ Cloud Firestore (quyền đọc bị chặn hoặc mạng lỗi). Sử dụng dữ liệu dự phòng.", err);
+                loadLocalBackup();
+            }
+        }
+
+        // Nạp dữ liệu dự phòng cục bộ
+        function loadLocalBackup() {
+            try {
                 const localFiles = localStorage.getItem('s_files');
                 const localCats = localStorage.getItem('s_categories');
 
@@ -1289,6 +1442,8 @@
                 renderCategories();
                 renderCategorySelectOptions();
                 applySiteSettings();
+            } catch (e) {
+                console.error("Lỗi nạp Local Backup: ", e);
             }
         }
 
@@ -1380,15 +1535,24 @@
                 ? (totalStorageMB / 1024).toFixed(1) + ' GB' 
                 : totalStorageMB.toFixed(1) + ' MB';
 
-            document.getElementById('stat-total-files').innerText = totalFiles;
-            document.getElementById('stat-total-downloads').innerText = totalDownloads;
-            document.getElementById('stat-total-storage').innerText = storageText;
+            const txtTotalFiles = document.getElementById('stat-total-files');
+            const txtTotalDownloads = document.getElementById('stat-total-downloads');
+            const txtTotalStorage = document.getElementById('stat-total-storage');
+
+            if (txtTotalFiles) txtTotalFiles.innerText = totalFiles;
+            if (txtTotalDownloads) txtTotalDownloads.innerText = totalDownloads;
+            if (txtTotalStorage) txtTotalStorage.innerText = storageText;
 
             // Admin Dashboard Stats
-            document.getElementById('admin-stat-files').innerText = totalFiles;
-            document.getElementById('admin-stat-downloads').innerText = totalDownloads;
-            document.getElementById('admin-stat-storage').innerText = storageText;
-            document.getElementById('admin-stat-ratio').innerText = totalFiles > 0 ? (totalDownloads / totalFiles).toFixed(1) : '0';
+            const txtAdminFiles = document.getElementById('admin-stat-files');
+            const txtAdminDownloads = document.getElementById('admin-stat-downloads');
+            const txtAdminStorage = document.getElementById('admin-stat-storage');
+            const txtAdminRatio = document.getElementById('admin-stat-ratio');
+
+            if (txtAdminFiles) txtAdminFiles.innerText = totalFiles;
+            if (txtAdminDownloads) txtAdminDownloads.innerText = totalDownloads;
+            if (txtAdminStorage) txtAdminStorage.innerText = storageText;
+            if (txtAdminRatio) txtAdminRatio.innerText = totalFiles > 0 ? (totalDownloads / totalFiles).toFixed(1) : '0';
 
             renderAdminFileList();
         }
@@ -1396,7 +1560,7 @@
         // --- BỘ TRỢ GIÚP DỰNG LOGO / IMAGE ICON TRÁNH LỖI HIỂN THỊ CHUỖI BASE64 ---
         function getFileIconHtml(imageIcon, defaultEmoji) {
             if (imageIcon && (imageIcon.startsWith('data:image') || imageIcon.startsWith('http'))) {
-                return `<img src="${imageIcon}" class="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-xl mx-auto" alt="Icon">`;
+                return `<img src="${imageIcon}" class="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-xl mx-auto" alt="Icon" onerror="this.src='https://api.iconify.design/lucide:file-text.svg';">`;
             }
             return `<span class="text-2xl sm:text-3xl">${imageIcon || defaultEmoji}</span>`;
         }
@@ -1433,18 +1597,21 @@
 
         // --- TÌM KIẾM ĐỒNG BỘ 2 CHIỀU ĐẦU TRANG & DASHBOARD ---
         window.syncAndHandleSearch = function(val) {
-            document.getElementById('search-input').value = val;
-            document.getElementById('top-search-input').value = val;
+            const searchInput = document.getElementById('search-input');
+            const topSearchInput = document.getElementById('top-search-input');
+
+            if (searchInput) searchInput.value = val;
+            if (topSearchInput) topSearchInput.value = val;
             
             const clearBtn1 = document.getElementById('clear-search-btn');
             const clearBtn2 = document.getElementById('top-clear-search-btn');
             
             if (val) {
-                clearBtn1?.classList.remove('hidden');
-                clearBtn2?.classList.remove('hidden');
+                if (clearBtn1) clearBtn1.classList.remove('hidden');
+                if (clearBtn2) clearBtn2.classList.remove('hidden');
             } else {
-                clearBtn1?.classList.add('hidden');
-                clearBtn2?.classList.add('hidden');
+                if (clearBtn1) clearBtn1.classList.add('hidden');
+                if (clearBtn2) clearBtn2.classList.add('hidden');
             }
             
             state.filters.search = val;
@@ -1487,21 +1654,24 @@
             renderFeaturedFiles();
 
             const totalFilteredCount = filtered.length;
-            document.getElementById('file-count').innerText = totalFilteredCount;
+            const txtFileCount = document.getElementById('file-count');
+            if (txtFileCount) txtFileCount.innerText = totalFilteredCount;
 
             const grid = document.getElementById('files-grid');
             const emptyState = document.getElementById('empty-state');
             const paginationEl = document.getElementById('pagination');
 
+            if (!grid) return;
+
             if (totalFilteredCount === 0) {
                 grid.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                paginationEl.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+                if (paginationEl) paginationEl.innerHTML = '';
                 return;
             }
 
             grid.classList.remove('hidden');
-            emptyState.classList.add('hidden');
+            if (emptyState) emptyState.classList.add('hidden');
 
             grid.className = state.ui.gridCols === 1 
                 ? 'grid grid-cols-1 gap-4' 
@@ -1547,7 +1717,7 @@
                                     <div>Tải: ${file.downloadCount || 0} • ${formattedDate}</div>
                                 </div>
                                 <div class="flex items-center gap-1">
-                                    <button onclick="triggerDownload('${file.id}')" class="btn btn-primary btn-sm rounded-xl font-bold flex items-center gap-1 shadow-md bg-indigo-600 border-none hover:bg-indigo-700">
+                                    <button onclick="triggerDownload('${file.id}')" class="btn btn-primary btn-sm rounded-xl font-bold flex items-center gap-1 shadow-md bg-indigo-600 border-none hover:bg-indigo-700 text-white">
                                         <i data-lucide="download" class="w-4 h-4"></i> Tải Ngay
                                     </button>
                                     <button onclick="copyShareLink('${file.id}')" class="btn btn-ghost btn-circle btn-sm text-slate-400 hover:text-indigo-500" title="Copy link tải">
@@ -1571,7 +1741,7 @@
                                     <span class="text-[10px] text-slate-400 dark:text-slate-500 font-bold">${formattedDate}</span>
                                 </div>
                                 <div class="flex gap-3 text-left">
-                                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-sm shrink-0 border border-slate-200/10 overflow-hidden">${getFileIconHtml(file.imageIcon, categoryObj.emoji)}</div>
+                                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-slate-200/10 overflow-hidden">${getFileIconHtml(file.imageIcon, categoryObj.emoji)}</div>
                                     <div class="min-w-0">
                                         <h3 class="font-extrabold text-sm leading-snug text-slate-800 dark:text-slate-100 line-clamp-2 transition-colors duration-250 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" title="${file.title}">${file.title}</h3>
                                         <p class="text-[11px] text-slate-400 dark:text-slate-500 line-clamp-2 mt-1 leading-normal" title="${file.description}">${file.description}</p>
@@ -1586,7 +1756,7 @@
                                 </div>
 
                                 <div class="flex gap-2">
-                                    <button onclick="triggerDownload('${file.id}')" class="btn btn-primary flex-1 rounded-2xl shadow-md font-extrabold text-xs shadow-indigo-500/10 flex items-center gap-1.5 py-2.5 bg-indigo-600 border-none hover:bg-indigo-700">
+                                    <button onclick="triggerDownload('${file.id}')" class="btn btn-primary flex-1 rounded-2xl shadow-md font-extrabold text-xs shadow-indigo-500/10 flex items-center gap-1.5 py-2.5 bg-indigo-600 border-none hover:bg-indigo-700 text-white">
                                         <i data-lucide="download" class="w-4 h-4"></i> TẢI XUỐNG
                                     </button>
                                     <button onclick="copyShareLink('${file.id}')" class="btn btn-outline btn-circle btn-sm h-10 w-10 border-slate-200 dark:border-slate-800 text-slate-400 hover:text-indigo-500" title="Sao chép link tải nhanh">
@@ -1611,6 +1781,7 @@
         // Hàm tự động vẽ các nút phân trang của 3x3 Grid
         function renderPaginationControls(totalPages) {
             const paginationEl = document.getElementById('pagination');
+            if (!paginationEl) return;
             if (totalPages <= 1) {
                 paginationEl.innerHTML = '';
                 return;
@@ -1691,7 +1862,7 @@
                         </div>
                         <div class="flex items-center justify-between border-t border-indigo-500/10 pt-3" onclick="event.stopPropagation()">
                             <span class="text-[10px] font-black text-indigo-500">${file.fileSize} • Lượt tải: ${file.downloadCount || 0}</span>
-                            <button onclick="triggerDownload('${file.id}')" class="btn btn-xs btn-primary rounded-lg text-[10px] font-bold bg-indigo-600 border-none hover:bg-indigo-700">TẢI TRỰC TIẾP</button>
+                            <button onclick="triggerDownload('${file.id}')" class="btn btn-xs btn-primary rounded-lg text-[10px] font-bold bg-indigo-600 border-none hover:bg-indigo-700 text-white">TẢI TRỰC TIẾP</button>
                         </div>
                     </div>
                 `;
@@ -1848,7 +2019,8 @@
 
         window.resetCategoryForm = function() {
             document.getElementById('edit-category-id').value = '';
-            document.getElementById('add-category-form').reset();
+            const form = document.getElementById('add-category-form');
+            if (form) form.reset();
         }
 
         // --- CẤU HÌNH GIAO DIỆN & SETTINGS ---
@@ -1892,35 +2064,54 @@
 
         function applySiteSettings() {
             // Thay đổi logo text & subtitle
-            document.getElementById('site-logo-text').innerText = state.settings.siteName;
-            document.getElementById('site-logo-subtext').innerText = state.settings.siteSubtitle || 'Hệ thống tải 1-Click v5.6.0-Pro';
+            const txtLogo = document.getElementById('site-logo-text');
+            const txtSub = document.getElementById('site-logo-subtext');
+            
+            if (txtLogo) txtLogo.innerText = state.settings.siteName;
+            if (txtSub) txtSub.innerText = state.settings.siteSubtitle || 'Hệ thống tải 1-Click v5.7.0-Pro';
             
             // Cập nhật text marquee vô hạn (đáp ứng text 1 và 2 tạo liên kết tuần hoàn)
-            document.getElementById('marquee-text-1').innerText = state.settings.marqueeText + '   •   ';
-            document.getElementById('marquee-text-2').innerText = state.settings.marqueeText + '   •   ';
+            const txtMarquee1 = document.getElementById('marquee-text-1');
+            const txtMarquee2 = document.getElementById('marquee-text-2');
+            
+            if (txtMarquee1) txtMarquee1.innerText = state.settings.marqueeText + '   •   ';
+            if (txtMarquee2) txtMarquee2.innerText = state.settings.marqueeText + '   •   ';
             
             // Động điều chỉnh tốc độ chạy chữ qua css variable
-            document.getElementById('marquee-text-container').style.setProperty('--marquee-speed', `${state.settings.marqueeSpeed || 30}s`);
+            const containerMarquee = document.getElementById('marquee-text-container');
+            if (containerMarquee) {
+                containerMarquee.style.setProperty('--marquee-speed', `${state.settings.marqueeSpeed || 30}s`);
+            }
             
             const marqueeBanner = document.getElementById('marquee-banner');
-            if (state.settings.marqueeVisible) {
-                marqueeBanner.classList.remove('hidden');
-            } else {
-                marqueeBanner.classList.add('hidden');
+            if (marqueeBanner) {
+                if (state.settings.marqueeVisible) {
+                    marqueeBanner.classList.remove('hidden');
+                } else {
+                    marqueeBanner.classList.add('hidden');
+                }
             }
 
             // Sync inputs settings form
-            document.getElementById('setting-site-name').value = state.settings.siteName;
-            document.getElementById('setting-site-subtitle').value = state.settings.siteSubtitle || '';
-            document.getElementById('setting-marquee-text').value = state.settings.marqueeText;
-            document.getElementById('setting-marquee-visible').checked = state.settings.marqueeVisible;
-            document.getElementById('setting-marquee-speed').value = state.settings.marqueeSpeed || 30;
+            const inputName = document.getElementById('setting-site-name');
+            const inputSub = document.getElementById('setting-site-subtitle');
+            const inputMarquee = document.getElementById('setting-marquee-text');
+            const checkMarquee = document.getElementById('setting-marquee-visible');
+            const selectMarqueeSpeed = document.getElementById('setting-marquee-speed');
+
+            if (inputName) inputName.value = state.settings.siteName;
+            if (inputSub) inputSub.value = state.settings.siteSubtitle || '';
+            if (inputMarquee) inputMarquee.value = state.settings.marqueeText;
+            if (checkMarquee) checkMarquee.checked = state.settings.marqueeVisible;
+            if (selectMarqueeSpeed) selectMarqueeSpeed.value = state.settings.marqueeSpeed || 30;
             
             // Sync nhãn tốc độ trong admin setting panel
             let speedText = 'Bình thường';
             if (state.settings.marqueeSpeed == 15) speedText = 'Nhanh x2';
             else if (state.settings.marqueeSpeed == 8) speedText = 'Nhanh x3';
-            document.getElementById('marquee-speed-display').innerText = speedText;
+            
+            const speedDisplay = document.getElementById('marquee-speed-display');
+            if (speedDisplay) speedDisplay.innerText = speedText;
 
             // Áp dụng màu chủ đạo đã lưu
             if (state.settings.themeColor) {
@@ -1928,15 +2119,16 @@
             }
         }
 
-        window.updateMarqueeSpeedDisplay = function(val) {
+        function updateMarqueeSpeedDisplay(val) {
             let speedText = 'Bình thường';
             if (val == 15) speedText = 'Nhanh x2';
             else if (val == 8) speedText = 'Nhanh x3';
-            document.getElementById('marquee-speed-display').innerText = speedText;
+            const speedDisplay = document.getElementById('marquee-speed-display');
+            if (speedDisplay) speedDisplay.innerText = speedText;
         }
 
         // CHUYỂN ĐỔI TÔNG MÀU SÁNG/TỐI ĐỘNG
-        window.changeThemeColor = async function(color) {
+        async function changeThemeColor(color) {
             state.settings.themeColor = color;
             applyThemeColor(color);
             await syncSettings();
@@ -1964,7 +2156,7 @@
                         color: white !important;
                     }
                     .btn-primary:hover {
-                        background-color: rgba(var(--primary-rgb), 0.9) !important;
+                        background-color: rgba(var(--primary-rgb), 0.85) !important;
                     }
                     .text-primary {
                         color: rgb(var(--primary-rgb)) !important;
@@ -2000,43 +2192,19 @@
 
         // --- HOẠT ĐỘNG THƯ VIỆN ĐỘNG (EVENTS & HELPERS) ---
 
-        // Trạng thái Drag & Drop File Upload
-        const dropZone = document.getElementById('drop-zone');
-        if (dropZone) {
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropZone.addEventListener(eventName, (e) => {
-                    e.preventDefault();
-                    dropZone.classList.add('border-indigo-500', 'bg-indigo-50/10');
-                }, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, (e) => {
-                    e.preventDefault();
-                    dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/10');
-                }, false);
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files.length > 0) {
-                    document.getElementById('file-local-upload').files = files;
-                    handleLocalFileSelected(document.getElementById('file-local-upload'));
-                }
-            });
-        }
-
         // Đọc File được tải từ PC
-        window.handleLocalFileSelected = function(input) {
+        function handleLocalFileSelected(input) {
             const file = input.files[0];
             if (!file) return;
 
-            document.getElementById('upload-status-text').innerHTML = `Đã chọn: <strong class="text-indigo-500">${file.name}</strong> (${formatBytes(file.size)})`;
-            document.getElementById('file-size-display').value = formatBytes(file.size);
-            
+            const uploadStatus = document.getElementById('upload-status-text');
+            const sizeDisplay = document.getElementById('file-size-display');
             const titleInput = document.getElementById('file-title');
-            if (!titleInput.value) {
+
+            if (uploadStatus) uploadStatus.innerHTML = `Đã chọn: <strong class="text-indigo-500">${file.name}</strong> (${formatBytes(file.size)})`;
+            if (sizeDisplay) sizeDisplay.value = formatBytes(file.size);
+            
+            if (titleInput && !titleInput.value) {
                 titleInput.value = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
             }
 
@@ -2052,7 +2220,7 @@
         }
 
         // Đọc ảnh Icon tự tải lên & Tự động nén ảnh xuống còn kích thước 96x96 (nhỏ gọn tránh tràn quota DB)
-        window.handleIconFileSelected = function(input) {
+        function handleIconFileSelected(input) {
             const file = input.files[0];
             if (!file) return;
 
@@ -2085,8 +2253,10 @@
                     
                     // Cập nhật khung preview
                     const preview = document.getElementById('icon-preview-box');
-                    preview.innerHTML = `<img src="${compressedBase64}" class="w-full h-full object-cover rounded-lg">`;
-                    preview.dataset.emoji = ''; // Reset preset emoji
+                    if (preview) {
+                        preview.innerHTML = `<img src="${compressedBase64}" class="w-full h-full object-cover rounded-lg">`;
+                        preview.dataset.emoji = ''; // Reset preset emoji
+                    }
                 }
                 img.src = e.target.result;
             }
@@ -2094,7 +2264,7 @@
         }
 
         // Áp dụng Preset Emoji Icon nhanh
-        window.applyPresetIcon = function(val) {
+        function applyPresetIcon(val) {
             const emojiMap = {
                 software: '💻',
                 driver: '⚙️',
@@ -2107,23 +2277,30 @@
             const emoji = emojiMap[val] || '';
             if (emoji) {
                 const preview = document.getElementById('icon-preview-box');
-                preview.innerHTML = `<span class="text-2xl">${emoji}</span>`;
-                preview.dataset.emoji = emoji;
-                document.getElementById('icon-upload-input').dataset.base64 = '';
+                const iconInput = document.getElementById('icon-upload-input');
+                if (preview) {
+                    preview.innerHTML = `<span class="text-2xl">${emoji}</span>`;
+                    preview.dataset.emoji = emoji;
+                }
+                if (iconInput) {
+                    iconInput.dataset.base64 = '';
+                }
             }
         }
 
         // Bật tắt loại nguồn tải file
-        window.toggleUploadType = function(type) {
+        function toggleUploadType(type) {
             const localGroup = document.getElementById('upload-local-group');
             const extGroup = document.getElementById('upload-external-group');
 
-            if (type === 'local') {
-                localGroup.classList.remove('hidden');
-                extGroup.classList.add('hidden');
-            } else {
-                localGroup.classList.add('hidden');
-                extGroup.classList.remove('hidden');
+            if (localGroup && extGroup) {
+                if (type === 'local') {
+                    localGroup.classList.remove('hidden');
+                    extGroup.classList.add('hidden');
+                } else {
+                    localGroup.classList.add('hidden');
+                    extGroup.classList.remove('hidden');
+                }
             }
         }
 
@@ -2170,10 +2347,12 @@
         // Điều khiển ẩn/hiện Modal tiến trình tải lên
         function showUploadProgressModal(show) {
             const modal = document.getElementById('upload-progress-modal');
-            if (show) {
-                modal.classList.add('modal-open');
-            } else {
-                modal.classList.remove('modal-open');
+            if (modal) {
+                if (show) {
+                    modal.classList.add('modal-open');
+                } else {
+                    modal.classList.remove('modal-open');
+                }
             }
         }
 
@@ -2191,7 +2370,7 @@
         }
 
         // Lưu hoặc sửa file tài nguyên (Hỗ trợ upload real-time lên server lưu trữ trung gian)
-        window.handleSaveFile = async function(e) {
+        async function handleSaveFile(e) {
             e.preventDefault();
 
             const fileId = document.getElementById('edit-file-id').value;
@@ -2234,9 +2413,9 @@
             const iconUpload = document.getElementById('icon-upload-input');
             const previewBox = document.getElementById('icon-preview-box');
 
-            if (iconUpload.dataset.base64) {
+            if (iconUpload && iconUpload.dataset.base64) {
                 imageIcon = iconUpload.dataset.base64;
-            } else if (previewBox.dataset.emoji) {
+            } else if (previewBox && previewBox.dataset.emoji) {
                 imageIcon = previewBox.dataset.emoji;
             }
 
@@ -2265,45 +2444,64 @@
             }
         }
 
-        window.editFile = function(fileId) {
+        function editFile(fileId) {
             const f = state.files.find(item => item.id === fileId);
             if (!f) return;
 
-            document.getElementById('edit-file-id').value = f.id;
-            document.getElementById('file-title').value = f.title;
-            document.getElementById('file-category').value = f.category;
-            document.getElementById('file-desc').value = f.description;
-            document.getElementById('file-size-display').value = f.fileSize;
-            document.getElementById('file-pinned').checked = f.pinned || false;
-            document.getElementById('file-visible').checked = f.visible !== false;
+            const editFileId = document.getElementById('edit-file-id');
+            const fileTitle = document.getElementById('file-title');
+            const fileCategory = document.getElementById('file-category');
+            const fileDesc = document.getElementById('file-desc');
+            const fileSizeDisplay = document.getElementById('file-size-display');
+            const filePinned = document.getElementById('file-pinned');
+            const fileVisible = document.getElementById('file-visible');
+
+            if (editFileId) editFileId.value = f.id;
+            if (fileTitle) fileTitle.value = f.title;
+            if (fileCategory) fileCategory.value = f.category;
+            if (fileDesc) fileDesc.value = f.description;
+            if (fileSizeDisplay) fileSizeDisplay.value = f.fileSize;
+            if (filePinned) filePinned.checked = f.pinned || false;
+            if (fileVisible) fileVisible.checked = f.visible !== false;
+
+            const localUploadInput = document.getElementById('file-local-upload');
+            const externalUrlInput = document.getElementById('file-external-url');
 
             if (f.uploadType === 'local') {
-                document.querySelector('input[name="uploadType"][value="local"]').checked = true;
+                const radioLocal = document.querySelector('input[name="uploadType"][value="local"]');
+                if (radioLocal) radioLocal.checked = true;
                 toggleUploadType('local');
-                document.getElementById('upload-status-text').innerHTML = `Tệp tin hiện tại sẵn sàng hoạt động.`;
-                document.getElementById('file-local-upload').dataset.base64 = f.downloadUrl;
+                const uploadStatus = document.getElementById('upload-status-text');
+                if (uploadStatus) uploadStatus.innerHTML = `Tệp tin hiện tại sẵn sàng hoạt động.`;
+                if (localUploadInput) localUploadInput.dataset.base64 = f.downloadUrl;
             } else {
-                document.querySelector('input[name="uploadType"][value="external"]').checked = true;
+                const radioExternal = document.querySelector('input[name="uploadType"][value="external"]');
+                if (radioExternal) radioExternal.checked = true;
                 toggleUploadType('external');
-                document.getElementById('file-external-url').value = f.downloadUrl;
+                if (externalUrlInput) externalUrlInput.value = f.downloadUrl;
             }
 
             const preview = document.getElementById('icon-preview-box');
-            if (f.imageIcon && f.imageIcon.startsWith('data:image')) {
-                preview.innerHTML = `<img src="${f.imageIcon}" class="w-full h-full object-cover rounded-lg">`;
-                document.getElementById('icon-upload-input').dataset.base64 = f.imageIcon;
-                preview.dataset.emoji = '';
-            } else {
-                preview.innerHTML = `<span class="text-2xl">${f.imageIcon}</span>`;
-                preview.dataset.emoji = f.imageIcon;
-                document.getElementById('icon-upload-input').dataset.base64 = '';
+            if (preview) {
+                if (f.imageIcon && f.imageIcon.startsWith('data:image')) {
+                    preview.innerHTML = `<img src="${f.imageIcon}" class="w-full h-full object-cover rounded-lg">`;
+                    const iconInput = document.getElementById('icon-upload-input');
+                    if (iconInput) iconInput.dataset.base64 = f.imageIcon;
+                    preview.dataset.emoji = '';
+                } else {
+                    preview.innerHTML = `<span class="text-2xl">${f.imageIcon}</span>`;
+                    preview.dataset.emoji = f.imageIcon;
+                    const iconInput = document.getElementById('icon-upload-input');
+                    if (iconInput) iconInput.dataset.base64 = '';
+                }
             }
 
             switchAdminSubtab('overview', document.querySelector('[onclick*="overview"]'));
-            document.getElementById('add-file-form').scrollIntoView();
+            const form = document.getElementById('add-file-form');
+            if (form) form.scrollIntoView();
         }
 
-        window.deleteFile = async function(fileId) {
+        async function deleteFile(fileId) {
             try {
                 await deleteFileFromDB(fileId);
                 showToast('Đã xóa tệp tin thành công khỏi hệ thống!', 'success');
@@ -2312,20 +2510,28 @@
             }
         }
 
-        window.resetFileForm = function() {
-            document.getElementById('edit-file-id').value = '';
-            document.getElementById('add-file-form').reset();
-            document.getElementById('upload-status-text').innerHTML = 'Kéo & Thả file vào đây hoặc click để chọn từ PC';
-            document.getElementById('file-local-upload').dataset.base64 = '';
-            document.getElementById('icon-upload-input').dataset.base64 = '';
-            document.getElementById('icon-preview-box').innerHTML = '<i data-lucide="image" class="w-5 h-5"></i>';
-            document.getElementById('icon-preview-box').dataset.emoji = '';
+        function resetFileForm() {
+            const editFileId = document.getElementById('edit-file-id');
+            const form = document.getElementById('add-file-form');
+            const uploadStatus = document.getElementById('upload-status-text');
+            const localUpload = document.getElementById('file-local-upload');
+            const iconUpload = document.getElementById('icon-upload-input');
+            const preview = document.getElementById('icon-preview-box');
+
+            if (editFileId) editFileId.value = '';
+            if (form) form.reset();
+            if (uploadStatus) uploadStatus.innerHTML = 'Kéo & Thả file vào đây hoặc click để chọn từ PC';
+            if (localUpload) localUpload.dataset.base64 = '';
+            if (iconUpload) iconUpload.dataset.base64 = '';
+            if (preview) {
+                preview.innerHTML = '<i data-lucide="image" class="w-5 h-5"></i>';
+                preview.dataset.emoji = '';
+            }
             lucide.createIcons();
         }
 
-
         // --- CHỨC NĂNG TẢI FILE THẬT ---
-        window.triggerDownload = async function(fileId) {
+        async function triggerDownload(fileId) {
             const file = state.files.find(f => f.id === fileId);
             if (!file) return;
 
@@ -2354,7 +2560,7 @@
         }
 
         // --- CHI TIẾT TÀI NGUYÊN MODAL ---
-        window.showFileDetails = function(fileId) {
+        function showFileDetails(fileId) {
             const file = state.files.find(f => f.id === fileId);
             if (!file) return;
 
@@ -2362,32 +2568,48 @@
             const date = new Date(file.createdAt).toLocaleDateString('vi-VN');
 
             const iconBox = document.getElementById('detail-file-icon');
-            if (file.imageIcon && (file.imageIcon.startsWith('data:image') || file.imageIcon.startsWith('http'))) {
-                iconBox.innerHTML = `<img src="${file.imageIcon}" class="w-full h-full object-cover rounded-2xl">`;
-            } else {
-                iconBox.innerHTML = `<span class="text-3xl">${file.imageIcon || categoryObj.emoji}</span>`;
+            if (iconBox) {
+                if (file.imageIcon && (file.imageIcon.startsWith('data:image') || file.imageIcon.startsWith('http'))) {
+                    iconBox.innerHTML = `<img src="${file.imageIcon}" class="w-full h-full object-cover rounded-2xl">`;
+                } else {
+                    iconBox.innerHTML = `<span class="text-3xl">${file.imageIcon || categoryObj.emoji}</span>`;
+                }
             }
 
-            document.getElementById('detail-file-badge').innerHTML = `${categoryObj.emoji} ${categoryObj.name}`;
-            document.getElementById('detail-file-title').innerText = file.title;
-            document.getElementById('detail-file-desc').innerText = file.description || 'Không có mô tả chi tiết thêm cho tập tin này.';
-            document.getElementById('detail-file-size').innerText = file.fileSize;
-            document.getElementById('detail-file-downloads').innerText = (file.downloadCount || 0) + ' lượt tải';
-            document.getElementById('detail-file-date').innerText = date;
-            document.getElementById('detail-file-type').innerText = file.uploadType === 'local' ? 'Tải trực tiếp tốc độ cao' : 'Liên kết ngoài trực tiếp';
+            const badge = document.getElementById('detail-file-badge');
+            const title = document.getElementById('detail-file-title');
+            const desc = document.getElementById('detail-file-desc');
+            const size = document.getElementById('detail-file-size');
+            const downloads = document.getElementById('detail-file-downloads');
+            const dateEl = document.getElementById('detail-file-date');
+            const type = document.getElementById('detail-file-type');
 
-            document.getElementById('detail-download-btn').onclick = () => {
-                triggerDownload(file.id);
-                closeModal('file-detail-modal');
-            };
-            document.getElementById('detail-copy-btn').onclick = () => copyShareLink(file.id);
-            document.getElementById('detail-qr-btn').onclick = () => showQRCode(file.id);
+            if (badge) badge.innerHTML = `${categoryObj.emoji} ${categoryObj.name}`;
+            if (title) title.innerText = file.title;
+            if (desc) desc.innerText = file.description || 'Không có mô tả chi tiết thêm cho tập tin này.';
+            if (size) size.innerText = file.fileSize;
+            if (downloads) downloads.innerText = (file.downloadCount || 0) + ' lượt tải';
+            if (dateEl) dateEl.innerText = date;
+            if (type) type.innerText = file.uploadType === 'local' ? 'Tải trực tiếp tốc độ cao' : 'Liên kết ngoài trực tiếp';
+
+            const dlBtn = document.getElementById('detail-download-btn');
+            const copyBtn = document.getElementById('detail-copy-btn');
+            const qrBtn = document.getElementById('detail-qr-btn');
+
+            if (dlBtn) {
+                dlBtn.onclick = () => {
+                    triggerDownload(file.id);
+                    closeModal('file-detail-modal');
+                };
+            }
+            if (copyBtn) copyBtn.onclick = () => copyShareLink(file.id);
+            if (qrBtn) qrBtn.onclick = () => showQRCode(file.id);
 
             openModal('file-detail-modal');
         }
 
         // --- SAO CHÉP ĐƯỜNG DẪN CHIA SẺ ---
-        window.copyShareLink = function(fileId) {
+        function copyShareLink(fileId) {
             const shareUrl = `${window.location.origin}${window.location.pathname}?fileId=${fileId}`;
             
             const tempInput = document.createElement("input");
@@ -2414,152 +2636,81 @@
         }
 
         // --- TẠO VÀ HIỂN THỊ MÃ QR TẢI TRỰC TIẾP ---
-        window.showQRCode = function(fileId) {
+        function showQRCode(fileId) {
             const file = state.files.find(f => f.id === fileId);
             if (!file) return;
 
             const shareUrl = `${window.location.origin}${window.location.pathname}?fileId=${fileId}`;
             const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(shareUrl)}`;
 
-            document.getElementById('qr-image').src = qrImgUrl;
-            document.getElementById('qr-file-title').innerText = file.title;
+            const qrImage = document.getElementById('qr-image');
+            const qrTitle = document.getElementById('qr-file-title');
+
+            if (qrImage) qrImage.src = qrImgUrl;
+            if (qrTitle) qrTitle.innerText = file.title;
 
             openModal('qr-modal');
         }
 
-        // --- EVENT LISTENERS & FILTERING ---
-        function setupEventListeners() {
-            // Khi bấm xem website, không bị thoát Admin mà xuất hiện nút nổi return tinh tế ở góc dưới
-            window.switchTab = function(tabName) {
-                const homeTab = document.getElementById('tab-home');
-                const adminTab = document.getElementById('tab-admin');
-                const floatingAdminBtn = document.getElementById('admin-floating-return');
+        // --- CHUYỂN TAB VÀ TRÌNH BÀY SỰ KIỆN TƯƠNG TÁC CHÍNH ---
+        function switchTab(tabName) {
+            const homeTab = document.getElementById('tab-home');
+            const adminTab = document.getElementById('tab-admin');
+            const floatingAdminBtn = document.getElementById('admin-floating-return');
 
-                if (tabName === 'home') {
-                    homeTab.classList.remove('hidden');
-                    adminTab.classList.add('hidden');
-                    
+            if (tabName === 'home') {
+                if (homeTab) homeTab.classList.remove('hidden');
+                if (adminTab) adminTab.classList.add('hidden');
+                
+                if (floatingAdminBtn) {
                     if (state.ui.isAdmin) {
                         floatingAdminBtn.classList.remove('hidden');
                     } else {
                         floatingAdminBtn.classList.add('hidden');
                     }
-                    
-                    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('text-indigo-600', 'dark:text-indigo-400'));
-                    document.querySelector('[onclick*="home"]').classList.add('text-indigo-600', 'dark:text-indigo-400');
-                } else {
-                    if (!state.ui.isAdmin) {
-                        openLoginModal();
-                        return;
-                    }
-                    homeTab.classList.add('hidden');
-                    adminTab.classList.remove('hidden');
-                    floatingAdminBtn.classList.add('hidden');
-                    renderAdminCategories();
                 }
-            }
-
-            window.switchAdminSubtab = function(subtabName, element) {
-                document.getElementById('admin-sub-overview').classList.add('hidden');
-                document.getElementById('admin-sub-manage-files').classList.add('hidden');
-                document.getElementById('admin-sub-categories').classList.add('hidden');
-                document.getElementById('admin-sub-settings').classList.add('hidden');
-
-                document.getElementById(`admin-sub-${subtabName}`).classList.remove('hidden');
-
-                const parent = element.parentElement;
-                parent.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
-                element.classList.add('tab-active');
-
-                if (subtabName === 'categories') {
-                    renderAdminCategories();
-                }
-            }
-
-            // Dark/Light Mode toggle
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            themeToggleBtn.addEventListener('click', () => {
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                }
-            });
-
-            // Tìm kiếm realtime
-            window.handleSearch = function() {
-                const searchVal = document.getElementById('search-input').value;
-                state.filters.search = searchVal;
                 
-                const clearBtn = document.getElementById('clear-search-btn');
-                if (searchVal) {
-                    clearBtn.classList.remove('hidden');
-                } else {
-                    clearBtn.classList.add('hidden');
-                }
-                state.pagination.currentPage = 1; // Reset về trang 1
-                filterAndRender();
-            }
-
-            window.clearSearch = function() {
-                document.getElementById('search-input').value = '';
-                state.filters.search = '';
-                document.getElementById('clear-search-btn').classList.add('hidden');
-                state.pagination.currentPage = 1;
-                filterAndRender();
-            }
-
-            window.filterByCategory = function(slug) {
-                state.filters.category = slug;
-                state.pagination.currentPage = 1; // Reset về trang 1
-                renderCategories();
-                filterAndRender();
-                scrollToSection('dashboard');
-            }
-
-            window.resetFilters = function() {
-                document.getElementById('search-input').value = '';
-                state.filters.search = '';
-                state.filters.category = 'all';
-                state.filters.sort = 'newest';
-                document.getElementById('sort-select').value = 'newest';
-                state.pagination.currentPage = 1;
-                renderCategories();
-                filterAndRender();
-            }
-
-            window.setGridCols = function(cols) {
-                state.ui.gridCols = cols;
-                const grid3 = document.getElementById('grid-3-btn');
-                const grid1 = document.getElementById('grid-1-btn');
-
-                if (cols === 3) {
-                    grid3.classList.add('text-indigo-600');
-                    grid3.classList.remove('text-slate-400');
-                    grid1.classList.remove('text-indigo-600');
-                    grid1.classList.add('text-slate-400');
-                } else {
-                    grid1.classList.add('text-indigo-600');
-                    grid1.classList.remove('text-slate-400');
-                    grid3.classList.remove('text-indigo-600');
-                    grid3.classList.add('text-slate-400');
-                }
-                filterAndRender();
-            }
-        }
-
-        function setupDarkMode() {
-            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('text-indigo-600', 'dark:text-indigo-400'));
+                const homeBtn = document.querySelector('[onclick*="home"]');
+                if (homeBtn) homeBtn.classList.add('text-indigo-600', 'dark:text-indigo-400');
             } else {
-                document.documentElement.classList.remove('dark');
+                if (!state.ui.isAdmin) {
+                    openLoginModal();
+                    return;
+                }
+                if (homeTab) homeTab.classList.add('hidden');
+                if (adminTab) adminTab.classList.remove('hidden');
+                if (floatingAdminBtn) floatingAdminBtn.classList.add('hidden');
+                renderAdminCategories();
             }
         }
 
-        // --- ADMIN LOGIN & LOGOUT FLOWS ---
-        window.openLoginModal = function() {
+        function switchAdminSubtab(subtabName, element) {
+            const tabOverview = document.getElementById('admin-sub-overview');
+            const tabManage = document.getElementById('admin-sub-manage-files');
+            const tabCategories = document.getElementById('admin-sub-categories');
+            const tabSettings = document.getElementById('admin-sub-settings');
+
+            if (tabOverview) tabOverview.classList.add('hidden');
+            if (tabManage) tabManage.classList.add('hidden');
+            if (tabCategories) tabCategories.classList.add('hidden');
+            if (tabSettings) tabSettings.classList.add('hidden');
+
+            const targetTab = document.getElementById(`admin-sub-${subtabName}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            const parent = element.parentElement;
+            if (parent) {
+                parent.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
+            }
+            element.classList.add('tab-active');
+
+            if (subtabName === 'categories') {
+                renderAdminCategories();
+            }
+        }
+
+        function openLoginModal() {
             if (state.ui.isAdmin) {
                 switchTab('admin');
             } else {
@@ -2567,8 +2718,7 @@
             }
         }
 
-        // Đăng nhập tích hợp Firebase Auth chính xác (Email / Password) và Local Fallback
-        window.handleAdminLogin = async function(e) {
+        async function handleAdminLogin(e) {
             e.preventDefault();
             
             if (isFirebaseActive && auth) {
@@ -2623,28 +2773,27 @@
             }
         }
 
-        window.handleLogout = async function() {
+        async function handleLogout() {
             state.ui.isAdmin = false;
             
-            // Nếu có Firebase Auth, tiến hành đăng xuất khỏi Firebase
             if (isFirebaseActive && auth) {
                 try {
                     await signOut(auth);
-                    // Sau khi đăng xuất tài khoản admin, lập tức đăng nhập lại nặc danh (Rule 3)
                     await signInAnonymously(auth);
                 } catch (e) {
                     console.error("Lỗi đăng xuất auth: ", e);
                 }
             }
             
-            document.getElementById('admin-floating-return').classList.add('hidden');
+            const returnBtn = document.getElementById('admin-floating-return');
+            if (returnBtn) returnBtn.classList.add('hidden');
             updateAdminAuthenticationHeader();
             switchTab('home');
             showToast('Đã thoát khỏi chế độ Quản trị viên.', 'info');
         }
 
         // --- TOAST NOTIFICATIONS ---
-        window.showToast = function(msg, type = 'info') {
+        function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             if (!container) return;
 
@@ -2675,27 +2824,28 @@
 
             const element = document.getElementById(id);
             setTimeout(() => {
-                element.classList.remove('translate-y-2', 'opacity-0');
+                if (element) element.classList.remove('translate-y-2', 'opacity-0');
             }, 50);
 
             setTimeout(() => {
-                element.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => element.remove(), 300);
+                if (element) {
+                    element.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => element.remove(), 300);
+                }
             }, 3500);
         }
 
-        // --- TIỆN ÍCH KHÁC (UTILITIES) ---
-        window.openModal = function(id) {
+        function openModal(id) {
             const m = document.getElementById(id);
             if (m) m.classList.add('modal-open');
         }
 
-        window.closeModal = function(id) {
+        function closeModal(id) {
             const m = document.getElementById(id);
             if (m) m.classList.remove('modal-open');
         }
 
-        window.scrollToSection = function(id) {
+        function scrollToSection(id) {
             const section = document.getElementById(id);
             if (section) section.scrollIntoView({ behavior: 'smooth' });
         }
@@ -2719,7 +2869,6 @@
             return val;
         }
 
-        // Đã tối ưu hóa hàm log để tránh hiển thị hoạt động tự động gây phiền hà lúc khởi động
         function logSystemActivity(text, status = 'info') {
             const logsContainer = document.getElementById('system-logs');
             if (!logsContainer) return;
@@ -2748,6 +2897,106 @@
             logsContainer.insertAdjacentHTML('afterbegin', itemHTML);
             lucide.createIcons();
         }
+
+        // --- ĐĂNG KÝ CÁC SỰ KIỆN DOM LÊN HÀM KHỞI CHẠY ---
+        function setupEventListeners() {
+            // Sự kiện nhấp Toggle Dark/Light Mode
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', () => {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                    }
+                });
+            }
+
+            // Đồng bộ kéo thả tập tin trực tiếp trên Drop Zone
+            const dropZone = document.getElementById('drop-zone');
+            if (dropZone) {
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('border-indigo-500', 'bg-indigo-50/10');
+                    }, false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/10');
+                    }, false);
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files.length > 0) {
+                        const fileInput = document.getElementById('file-local-upload');
+                        if (fileInput) {
+                            fileInput.files = files;
+                            handleLocalFileSelected(fileInput);
+                        }
+                    }
+                });
+            }
+
+            // Theo dõi cuộn trang để ẩn/hiện nút Back to Top
+            window.addEventListener('scroll', () => {
+                const scrollBtn = document.getElementById('scroll-to-top-btn');
+                if (scrollBtn) {
+                    if (window.scrollY > 300) {
+                        scrollBtn.classList.remove('hidden');
+                    } else {
+                        scrollBtn.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // GẮN CÁC HÀM XỬ LÝ THỰC TẾ LÊN WINDOW ĐỂ GHI ĐÈ CÁC STUBS TRÁNH LỖI REFERENCEERROR
+        window.openLoginModal = openLoginModal;
+        window.switchTab = switchTab;
+        window.scrollToSection = scrollToSection;
+        window.clearTopSearch = clearTopSearch;
+        window.syncAndHandleSearch = syncAndHandleSearch;
+        window.filterAndRender = filterAndRender;
+        window.resetFilters = resetFilters;
+        window.setGridCols = setGridCols;
+        window.switchAdminSubtab = switchAdminSubtab;
+        window.handleSaveFile = handleSaveFile;
+        window.toggleUploadType = toggleUploadType;
+        window.handleLocalFileSelected = handleLocalFileSelected;
+        window.handleIconFileSelected = handleIconFileSelected;
+        window.applyPresetIcon = applyPresetIcon;
+        window.resetFileForm = resetFileForm;
+        window.renderAdminFileList = renderAdminFileList;
+        window.handleSaveCategory = handleSaveCategory;
+        window.resetCategoryForm = resetCategoryForm;
+        window.handleSaveGeneralSettings = handleSaveGeneralSettings;
+        window.handleSaveMarqueeSettings = handleSaveMarqueeSettings;
+        window.updateMarqueeSpeedDisplay = updateMarqueeSpeedDisplay;
+        window.changeThemeColor = changeThemeColor;
+        window.filterByCategory = filterByCategory;
+        window.handleAdminLogin = handleAdminLogin;
+        window.closeModal = closeModal;
+        window.triggerDownload = triggerDownload;
+        window.copyShareLink = copyShareLink;
+        window.showQRCode = showQRCode;
+        window.showFileDetails = showFileDetails;
+        window.editFile = editFile;
+        window.deleteFile = deleteFile;
+        window.editCategory = editCategory;
+        window.deleteCategory = deleteCategory;
+        window.toggleLoginMode = toggleLoginMode;
+        window.setupEventListeners = setupEventListeners;
+        window.setupDarkMode = setupDarkMode;
+        window.setupFirebase = setupFirebase;
+        window.loadData = loadData;
+
     </script>
 </body>
 </html>
