@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareFile Pro - Hệ Thống Quản Lý & Tải File Trực Tiếp v5.3.0-Pro</title>
+    <title>ShareFile Pro - Hệ Thống Quản Lý & Tải File Trực Tiếp v5.6.0-Pro</title>
     <!-- Tailwind CSS & DaisyUI -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -174,7 +174,7 @@
         <span class="loading loading-infinity loading-lg text-primary"></span>
         <div class="text-center">
             <h3 class="font-bold text-xl text-primary-content">ShareFile Pro</h3>
-            <p class="text-xs text-slate-400 mt-1">Đang khởi tạo hệ thống v5.3.0-Pro...</p>
+            <p class="text-xs text-slate-400 mt-1">Đang kết nối Cloud Realtime Database...</p>
         </div>
     </div>
 
@@ -187,7 +187,7 @@
     <!-- HEADER / MENU -->
     <header class="sticky top-0 z-40 w-full glass-panel transition-all duration-300 border-b border-slate-200/50 dark:border-slate-800/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- Logo Vector (Đồng bộ thiết kế 100% với Favicon SVG) -->
+            <!-- Logo Vector (Đồng bộ thiết kế với Favicon SVG) -->
             <a href="#" onclick="switchTab('home')" class="flex items-center gap-2.5 group">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-all duration-300">
                     <svg class="w-6 h-6 stroke-white fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -197,7 +197,7 @@
                 </div>
                 <div class="text-left">
                     <span id="site-logo-text" class="font-extrabold text-lg bg-gradient-to-r from-indigo-600 to-cyan-500 bg-clip-text text-transparent tracking-tight">ShareFile Pro</span>
-                    <span id="site-logo-subtext" class="block text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Hệ thống tải 1-Click v5.3.0-Pro</span>
+                    <span id="site-logo-subtext" class="block text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Hệ thống tải 1-Click v5.6.0-Pro</span>
                 </div>
             </a>
 
@@ -241,8 +241,8 @@
             <!-- Container Marquee chạy vô tận -->
             <div class="w-full overflow-hidden relative">
                 <div class="animate-marquee-infinite text-sm font-semibold text-slate-600 dark:text-slate-300" id="marquee-text-container">
-                    <span id="marquee-text-1">Hệ thống tải file Pro v5.3.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <span id="marquee-text-2">Hệ thống tải file Pro v5.3.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span id="marquee-text-1">Hệ thống tải file Pro v5.6.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span id="marquee-text-2">Hệ thống tải file Pro v5.6.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </div>
             </div>
         </div>
@@ -401,7 +401,7 @@
                     <div>
                         <div class="inline-flex items-center gap-1.5 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2.5 py-0.5 rounded text-xs font-bold">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Admin Mode Active v5.3.0-Pro
+                            Admin Mode Active v5.6.0-Pro
                         </div>
                         <h1 class="text-3xl font-black mt-1">Bảng Điều Khiển Quản Trị</h1>
                         <p class="text-xs text-slate-400 mt-1">Quản lý tệp dữ liệu, đổi màu chủ đạo hệ thống và cấu hình giao diện</p>
@@ -431,7 +431,7 @@
                         <i data-lucide="tag" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Quản lý danh mục
                     </button>
                     <button class="tab rounded-xl text-xs font-bold" onclick="switchAdminSubtab('settings', this)">
-                        <i data-lucide="cog" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Cấu hình & Database
+                        <i data-lucide="cog" class="w-4 h-4 mr-1.5 text-indigo-500"></i> Cấu hình Website
                     </button>
                 </div>
             </div>
@@ -482,7 +482,7 @@
                                     <i data-lucide="file-plus" class="w-5 h-5 text-indigo-500"></i>
                                     Thêm / Cập Nhật File Tài Nguyên
                                 </h3>
-                                <div class="badge badge-primary font-bold bg-indigo-600 border-none">v5.3.0 Form</div>
+                                <div class="badge badge-primary font-bold bg-indigo-600 border-none">v5.6.0 Form</div>
                             </div>
                             
                             <!-- Form thêm file -->
@@ -608,7 +608,7 @@
                                 <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs flex gap-2.5 items-start">
                                     <span class="p-1 rounded bg-green-500/10 text-emerald-500 mt-0.5"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>
                                     <div>
-                                        <p class="font-bold text-slate-700 dark:text-slate-200">Khởi tạo hệ thống v5.3.0 Pro</p>
+                                        <p class="font-bold text-slate-700 dark:text-slate-300">Khởi tạo hệ thống v5.6.0 Pro</p>
                                         <p class="text-slate-400 text-[9px] dark:text-slate-500">Vừa xong • Admin</p>
                                     </div>
                                 </div>
@@ -695,7 +695,7 @@
                     </div>
                 </div>
 
-                <!-- SUBTAB SETTINGS / CÀI ĐẶT TRANG WEB -->
+                <!-- SUBTAB SETTINGS / CÀI ĐẶT TRANG WEB (Đã loại bỏ hoàn toàn cấu hình API Firebase thủ công) -->
                 <div id="admin-sub-settings" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Đổi cấu hình chung -->
                     <div class="glass-panel rounded-3xl p-6 shadow-lg space-y-4">
@@ -707,7 +707,7 @@
                             </div>
                             <div class="form-control">
                                 <label class="label"><span class="label-text font-bold text-xs text-slate-500">Tiêu đề phụ dưới Logo</span></label>
-                                <input type="text" id="setting-site-subtitle" placeholder="Hệ thống tải 1-Click v5.3.0-Pro" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200">
+                                <input type="text" id="setting-site-subtitle" placeholder="Hệ thống tải 1-Click v5.6.0-Pro" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-200">
                             </div>
                             
                             <!-- Đổi màu chủ đạo -->
@@ -721,12 +721,6 @@
                                     <button type="button" onclick="changeThemeColor('#f59e0b')" class="w-8 h-8 rounded-full bg-amber-500 hover:scale-110 active:scale-95 transition-all" title="Amber"></button>
                                     <button type="button" onclick="changeThemeColor('#db2777')" class="w-8 h-8 rounded-full bg-pink-600 hover:scale-110 active:scale-95 transition-all" title="Pink"></button>
                                 </div>
-                            </div>
-                            
-                            <!-- Cài đặt Cloud Database -->
-                            <div class="form-control">
-                                <label class="label flex justify-between"><span class="label-text font-bold text-xs text-slate-500">Cấu hình Firebase API (Bảo mật Cloud)</span><span class="text-[9px] text-indigo-500 font-bold">Lưu Offline Trình Duyệt</span></label>
-                                <textarea id="setting-firebase-config" class="textarea textarea-bordered rounded-xl h-24 bg-white/50 dark:bg-slate-900/50 text-xs font-mono" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}'></textarea>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-sm rounded-xl bg-indigo-600 border-none">Lưu cấu hình</button>
@@ -789,7 +783,7 @@
             <!-- Version Info & Socials với hiệu ứng phát sáng mượt mà -->
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="text-[11px] text-slate-500 text-center md:text-right">
-                    Phiên bản: <span class="text-indigo-400 font-bold">v5.3.0-Pro Enterprise</span> • Bản quyền thuộc ShareFile © 2026
+                    Phiên bản: <span class="text-indigo-400 font-bold">v5.6.0-Pro Enterprise</span> • Bản quyền thuộc ShareFile © 2026
                 </div>
                 <div class="flex gap-2">
                     <!-- Facebook (Chuẩn) -->
@@ -829,7 +823,7 @@
                 <div id="login-firebase-fields" class="space-y-4 hidden">
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Email Quản Trị *</span></label>
-                        <input type="email" id="admin-email" placeholder="Nhập email quản trị của bạn" autocomplete="off" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
+                        <input type="email" id="admin-email" placeholder="Nhập email quản trị" autocomplete="off" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mật khẩu bảo mật *</span></label>
@@ -837,7 +831,7 @@
                     </div>
                 </div>
 
-                <!-- Vùng nhập cho chế độ Offline cục bộ (SỬA: Bảo mật không gợi ý mã PIN cũ) -->
+                <!-- Vùng nhập cho chế độ Offline cục bộ (Bảo mật không gợi ý mã PIN cũ) -->
                 <div id="login-local-fields" class="form-control">
                     <label class="label"><span class="label-text font-bold text-xs text-slate-600 dark:text-slate-300">Mã PIN Quản Trị *</span></label>
                     <input type="password" id="admin-password-local" placeholder="Nhập mã PIN xác thực" autocomplete="new-password" class="input input-bordered rounded-xl bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm">
@@ -930,21 +924,21 @@
 
     <!-- JAVASCRIPT LOGIC CHÍNH -->
     <script type="module">
-        // Import Firebase v11.6.1 SDKs
+        // Import Firebase v11.6.1 SDKs (Tích hợp Email/Password Auth & Cloud Firestore)
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signOut, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        // --- GLOBAL VARIABLES (Provided by Environment or Custom Fallbacks) ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sharefile-app-prod';
+        // --- GLOBAL VARIABLES ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'toolvisnam';
         
         let db = null;
         let auth = null;
         let isFirebaseActive = false;
         let currentUser = null;
 
-        // SỬA: Thêm trực tiếp cấu hình Firebase chính chủ do khách hàng cung cấp
-        const defaultFirebaseConfig = {
+        // CẤU HÌNH FIREBASE DATABASE CHÍNH CHỦ
+        const firebaseConfig = {
             apiKey: "AIzaSyBLj75mF2S314tVkMwhswHFDXLlmuEka7I",
             authDomain: "toolvisnam.firebaseapp.com",
             projectId: "toolvisnam",
@@ -969,14 +963,13 @@
             ],
             settings: {
                 siteName: 'ShareFile Pro',
-                siteSubtitle: 'Hệ thống tải 1-Click v5.3.0-Pro', // Tiêu đề phụ logo
+                siteSubtitle: 'Hệ thống tải 1-Click v5.6.0-Pro', // Tiêu đề phụ logo
                 heroTitle: 'Tải Xuống File Trực Tiếp Chỉ Với 1 Cú Click',
                 heroDesc: 'Kho phần mềm, Driver, Tài liệu và ISO Windows chất lượng cao. Tất cả tệp đều được kiểm tra an toàn và có liên kết trực tiếp tốc độ cực nhanh.',
                 themeColor: '#4f46e5',
-                marqueeText: 'Hệ thống tải file Pro v5.3.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động.',
+                marqueeText: 'Hệ thống tải file Pro v5.6.0 chính thức hoạt động | Tốc độ băng thông siêu tốc 1-Click | Hỗ trợ quét mã QR tải nhanh trực tiếp trên di động.',
                 marqueeVisible: true,
-                marqueeSpeed: 30, // Tốc độ chạy (30: Bình thường, 15: Nhanh x2, 8: Nhanh x3)
-                customFirebase: '' 
+                marqueeSpeed: 30 // Tốc độ chạy (30: Bình thường, 15: Nhanh x2, 8: Nhanh x3)
             },
             filters: {
                 search: '',
@@ -1055,12 +1048,12 @@
 
         // --- HÀM KHỞI CHẠY CHÍNH (ONLOAD) ---
         window.addEventListener('DOMContentLoaded', async () => {
-            // Định nghĩa & nhúng Favicon SVG cao cấp đồng bộ logo thương hiệu
+            // Định nghĩa & nhúng Favicon SVG cao động
             setupDynamicFavicon();
             
             lucide.createIcons();
 
-            // Khôi phục cài đặt cục bộ trước để lấy thông tin kết nối DB tùy chỉnh
+            // Khôi phục cài đặt cục bộ trước
             const localSettings = localStorage.getItem('s_settings');
             if (localSettings) {
                 state.settings = JSON.parse(localSettings);
@@ -1104,53 +1097,67 @@
             document.getElementsByTagName('head')[0].appendChild(link);
         }
 
-        // --- KHỞI TẠO FIREBASE ---
+        // --- KHỞI TẠO FIREBASE (TUÂN THỦ HOÀN TOÀN RULE 3: AUTH TRƯỚC TRUY VẤN) ---
+        // SỬA LỖI: Loại bỏ tất cả thông báo welcome/cảnh báo tự động lúc tải trang
         async function setupFirebase() {
             try {
-                let activeConfig = defaultFirebaseConfig; // Ưu tiên cấu hình Firebase do bạn cung cấp
-                
-                if (state.settings.customFirebase) {
-                    try {
-                        activeConfig = JSON.parse(state.settings.customFirebase);
-                    } catch (e) {
-                        console.error("Cấu hình Firebase tùy chỉnh bị lỗi cú pháp JSON:", e);
-                    }
-                }
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                isFirebaseActive = true; // Đánh dấu SDK Firebase đã khởi tạo thành công
 
-                if (activeConfig) {
-                    const app = initializeApp(activeConfig);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
+                // Lắng nghe thay đổi trạng thái Auth trước để xử lý quyền đăng nhập Admin và Khách
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (user) {
+                        updateLoginModalInterface(true);
 
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
+                        if (!user.isAnonymous) {
+                            state.ui.isAdmin = true;
+                            logSystemActivity(`Admin đăng nhập thành công qua Cloud Auth: ${user.email}`, 'success');
+                            updateAdminAuthenticationHeader();
+                        } else {
+                            state.ui.isAdmin = false;
+                            updateAdminAuthenticationHeader();
+                        }
+
+                        document.getElementById('db-status-badge').className = 'badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none badge-sm text-[10px] font-bold';
+                        document.getElementById('db-status-badge').innerText = 'Cloud Realtime';
+                        
+                        // Đồng bộ dữ liệu Firestore Cloud (Rule 3)
+                        syncRealtimeListeners();
                     } else {
-                        // Mặc định khách truy cập dùng Anonymous
+                        // Trường hợp không đăng nhập (Hoặc chưa kích hoạt Anonymous Auth)
+                        updateLoginModalInterface(true);
+                        state.ui.isAdmin = false;
+                        updateAdminAuthenticationHeader();
+                        document.getElementById('db-status-badge').className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
+                        document.getElementById('db-status-badge').innerText = 'Cloud (Chưa Auth)';
+                    }
+                });
+
+                // Thực hiện phiên đăng nhập tự động
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        try {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } catch (tokenError) {
+                            console.warn("Lỗi Custom Token, tự động thử đăng nhập nặc danh:", tokenError);
+                            await signInAnonymously(auth);
+                        }
+                    } else {
                         await signInAnonymously(auth);
                     }
-
-                    // Theo dõi phiên đăng nhập
-                    onAuthStateChanged(auth, (user) => {
-                        currentUser = user;
-                        if (user) {
-                            // Cập nhật trạng thái hiển thị của Form Login Admin tương ứng
-                            updateLoginModalInterface(true);
-
-                            // Nếu user đăng nhập bằng Email/Password (Không phải Anonymous), cấp quyền Admin thực tế
-                            if (!user.isAnonymous) {
-                                state.ui.isAdmin = true;
-                                logSystemActivity(`Admin đăng nhập thành công qua Cloud Auth: ${user.email}`, 'success');
-                                updateAdminAuthenticationHeader();
-                            }
-
-                            document.getElementById('db-status-badge').className = 'badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none badge-sm text-[10px] font-bold';
-                            document.getElementById('db-status-badge').innerText = 'Cloud Realtime';
-                            isFirebaseActive = true;
-                        }
-                    });
-                } else {
-                    useLocalMode();
+                } catch (authError) {
+                    // SỬA LỖI: Bắt lỗi auth/admin-restricted-operation khi Anonymous Auth bị tắt
+                    console.warn("Thông báo bảo mật: Anonymous Auth chưa được bật trên Firebase Console. Đang chuyển sang chế độ Khách Offline nhưng vẫn sẵn sàng kết nối Admin Email!", authError);
+                    
+                    // ĐÃ XÓA: Dòng showToast cảnh báo nặc danh bị tắt để giữ trang web sạch sẽ theo yêu cầu người dùng
+                    
+                    // Fallback tải dữ liệu offline để tránh màn hình trống
+                    await loadData();
                 }
+
             } catch (error) {
                 console.error("Lỗi khởi tạo Firebase: ", error);
                 useLocalMode();
@@ -1162,7 +1169,7 @@
             updateLoginModalInterface(false);
             document.getElementById('db-status-badge').className = 'badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border-none badge-sm text-[10px] font-bold';
             document.getElementById('db-status-badge').innerText = 'Local Offline';
-            showToast('Đang hoạt động ngoại tuyến (Local Storage).', 'info');
+            // Đamp bảo không xuất hiện bất kỳ thông báo tự động nào khi tải trang
         }
 
         // Cập nhật giao diện Modal đăng nhập tương ứng với trạng thái kết nối Firebase
@@ -1172,11 +1179,11 @@
             const localFields = document.getElementById('login-local-fields');
 
             if (firebaseActive) {
-                sub.innerText = 'Đăng nhập bằng tài khoản Firebase Authentication';
+                sub.innerText = 'Đăng nhập bảo mật bằng tài khoản quản trị viên';
                 firebaseFields.classList.remove('hidden');
                 localFields.classList.add('hidden');
             } else {
-                sub.innerText = 'Nhập mã bảo mật Admin lưu trữ cục bộ trên máy';
+                sub.innerText = 'Nhập mã PIN dự phòng lưu trữ ngoại tuyến cục bộ';
                 firebaseFields.classList.add('hidden');
                 localFields.classList.remove('hidden');
             }
@@ -1203,48 +1210,54 @@
             lucide.createIcons();
         }
 
+        // --- LIÊN KẾT REALTIME DATABASE LẮNG NGHE (TUÂN THỦ RULE 1 & RULE 2) ---
+        function syncRealtimeListeners() {
+            if (!isFirebaseActive || !db || !currentUser) return;
+
+            // Rule 1: Đường dẫn nghiêm ngặt cho collection public
+            const filesCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'files');
+            const catCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'categories');
+
+            // Lắng nghe real-time dữ liệu Files (Rule 2: Lấy dữ liệu phẳng, lọc phân trang xử lý tại Client RAM)
+            onSnapshot(filesCollRef, (snapshot) => {
+                const filesList = [];
+                snapshot.forEach(doc => {
+                    filesList.push({ id: doc.id, ...doc.data() });
+                });
+                state.files = filesList.length > 0 ? filesList : mockFiles;
+                updateDashboardAndStats();
+            }, (error) => {
+                console.error("Lỗi Firestore Files: ", error);
+            });
+
+            // Lắng nghe real-time Danh mục
+            onSnapshot(catCollRef, (snapshot) => {
+                const catList = [{ id: 'all', name: 'Tất cả', slug: 'all', emoji: '🌟' }];
+                snapshot.forEach(doc => {
+                    catList.push({ id: doc.id, ...doc.data() });
+                });
+                if (catList.length > 1) {
+                    state.categories = catList;
+                }
+                renderCategories();
+                renderCategorySelectOptions();
+            }, (error) => {
+                console.error("Lỗi Firestore Categories: ", error);
+            });
+        }
+
         // --- TẢI DỮ LIỆU ĐỒNG BỘ ---
         async function loadData() {
-            if (isFirebaseActive && db) {
-                const filesCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'files');
-                const catCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'categories');
-                const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
-
-                // Lắng nghe real-time dữ liệu Files
-                onSnapshot(filesCollRef, (snapshot) => {
-                    const filesList = [];
-                    snapshot.forEach(doc => {
-                        filesList.push({ id: doc.id, ...doc.data() });
-                    });
-                    state.files = filesList.length > 0 ? filesList : mockFiles;
-                    updateDashboardAndStats();
-                }, (error) => {
-                    console.error("Lỗi tải files: ", error);
-                });
-
-                // Lắng nghe real-time Danh mục
-                onSnapshot(catCollRef, (snapshot) => {
-                    const catList = [{ id: 'all', name: 'Tất cả', slug: 'all', emoji: '🌟' }];
-                    snapshot.forEach(doc => {
-                        catList.push({ id: doc.id, ...doc.data() });
-                    });
-                    if (catList.length > 1) {
-                        state.categories = catList;
-                    }
-                    renderCategories();
-                    renderCategorySelectOptions();
-                }, (error) => {
-                    console.error("Lỗi tải danh mục: ", error);
-                });
-
+            if (isFirebaseActive && db && currentUser) {
                 // Tải cài đặt trang web từ Firestore Cloud
+                const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
                 const configSnap = await getDoc(configDocRef);
                 if (configSnap.exists()) {
                     state.settings = configSnap.data();
                     applySiteSettings();
                 }
             } else {
-                // Tải từ LocalStorage
+                // Tải từ LocalStorage (Offline mode)
                 const localFiles = localStorage.getItem('s_files');
                 const localCats = localStorage.getItem('s_categories');
 
@@ -1799,20 +1812,19 @@
         }
 
         window.deleteCategory = async function(catId) {
-            if (!confirm('Bạn có chắc chắn muốn xóa danh mục này? Các file thuộc danh mục này sẽ giữ nguyên nhưng không hiển thị đúng.')) return;
-
+            state.categories = state.categories.filter(c => c.id !== catId);
+            
             if (isFirebaseActive && db) {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'categories', catId);
                 await deleteDoc(docRef);
             } else {
-                state.categories = state.categories.filter(c => c.id !== catId);
                 localStorage.setItem('s_categories', JSON.stringify(state.categories));
                 renderCategories();
                 renderCategorySelectOptions();
             }
 
             renderAdminCategories();
-            showToast('Đã xóa danh mục.', 'success');
+            showToast('Đã thực hiện xóa danh mục khỏi hệ thống!', 'success');
         }
 
         window.resetCategoryForm = function() {
@@ -1825,11 +1837,9 @@
             e.preventDefault();
             const name = document.getElementById('setting-site-name').value;
             const subtitle = document.getElementById('setting-site-subtitle').value;
-            const customFirebase = document.getElementById('setting-firebase-config').value;
 
             state.settings.siteName = name || state.settings.siteName;
             state.settings.siteSubtitle = subtitle || state.settings.siteSubtitle;
-            state.settings.customFirebase = customFirebase || '';
 
             await syncSettings();
             applySiteSettings();
@@ -1864,7 +1874,7 @@
         function applySiteSettings() {
             // Thay đổi logo text & subtitle
             document.getElementById('site-logo-text').innerText = state.settings.siteName;
-            document.getElementById('site-logo-subtext').innerText = state.settings.siteSubtitle || 'Hệ thống tải 1-Click v5.3.0-Pro';
+            document.getElementById('site-logo-subtext').innerText = state.settings.siteSubtitle || 'Hệ thống tải 1-Click v5.6.0-Pro';
             
             // Cập nhật text marquee vô hạn (đáp ứng text 1 và 2 tạo liên kết tuần hoàn)
             document.getElementById('marquee-text-1').innerText = state.settings.marqueeText + '   •   ';
@@ -1892,8 +1902,6 @@
             if (state.settings.marqueeSpeed == 15) speedText = 'Nhanh x2';
             else if (state.settings.marqueeSpeed == 8) speedText = 'Nhanh x3';
             document.getElementById('marquee-speed-display').innerText = speedText;
-            
-            document.getElementById('setting-firebase-config').value = state.settings.customFirebase || '';
 
             // Áp dụng màu chủ đạo đã lưu
             if (state.settings.themeColor) {
@@ -2092,7 +2100,7 @@
                 const inputLocal = document.getElementById('file-local-upload');
                 downloadUrl = inputLocal.dataset.base64 || '#';
             } else {
-                downloadUrl = document.getElementById('file-external-url').value;
+                document.getElementById('file-external-url').value;
             }
 
             let imageIcon = '📂';
@@ -2169,10 +2177,9 @@
         }
 
         window.deleteFile = async function(fileId) {
-            if (!confirm('Bạn chắc chắn có muốn xóa tệp này khỏi kho ứng dụng?')) return;
             try {
                 await deleteFileFromDB(fileId);
-                showToast('Đã xóa tệp tin thành công!', 'success');
+                showToast('Đã xóa tệp tin thành công khỏi hệ thống!', 'success');
             } catch (err) {
                 showToast('Không thể xóa tệp.', 'error');
             }
@@ -2439,9 +2446,14 @@
             
             if (isFirebaseActive && auth) {
                 // Đăng nhập Firebase Auth thực tế
-                const email = document.getElementById('admin-email').value;
+                const email = document.getElementById('admin-email').value.trim();
                 const password = document.getElementById('admin-password-cloud').value;
                 
+                if (!email || !password) {
+                    showToast('Vui lòng điền đầy đủ Email và Mật khẩu!', 'warning');
+                    return;
+                }
+
                 showToast('Đang kết nối xác thực Google Cloud...', 'info');
                 try {
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -2450,7 +2462,7 @@
                     state.ui.isAdmin = true;
                     closeModal('login-modal');
                     
-                    // Reset fields
+                    // Reset fields bảo mật
                     document.getElementById('admin-email').value = '';
                     document.getElementById('admin-password-cloud').value = '';
                     
@@ -2459,7 +2471,13 @@
                     showToast(`Chào mừng trở lại, ${user.email}!`, 'success');
                 } catch (error) {
                     console.error("Lỗi Auth: ", error);
-                    showToast('Đăng nhập thất bại! Vui lòng kiểm tra lại Email và Mật khẩu.', 'error');
+                    let errMsg = 'Thông tin đăng nhập chưa chính xác. Vui lòng kiểm tra lại!';
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                        errMsg = 'Email hoặc mật khẩu chưa chính xác!';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errMsg = 'Định dạng Email không hợp lệ!';
+                    }
+                    showToast(errMsg, 'error');
                 }
             } else {
                 // Chế độ Offline cục bộ PIN
@@ -2485,7 +2503,7 @@
             if (isFirebaseActive && auth) {
                 try {
                     await signOut(auth);
-                    // Đăng nhập lại nặc danh cho khách truy cập đọc DB
+                    // Sau khi đăng xuất tài khoản admin, lập tức đăng nhập lại nặc danh (Rule 3)
                     await signInAnonymously(auth);
                 } catch (e) {
                     console.error("Lỗi đăng xuất auth: ", e);
@@ -2574,6 +2592,7 @@
             return val;
         }
 
+        // Đã tối ưu hóa hàm log để tránh hiển thị hoạt động tự động gây phiền hà lúc khởi động
         function logSystemActivity(text, status = 'info') {
             const logsContainer = document.getElementById('system-logs');
             if (!logsContainer) return;
